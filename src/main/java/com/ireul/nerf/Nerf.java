@@ -13,10 +13,10 @@ public class Nerf {
      * @param clazz subclass of BaseApplication or any implementation of Application
      * @param args  command-line arguments
      */
-    public static void boot(Class<? extends Application> clazz, String[] args) {
+    public static void ignite(Class<? extends Application> clazz, String[] args) {
         try {
             Application application = clazz.newInstance();
-            application.setup();
+            application.boot();
             application.execute(args);
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();

@@ -1,10 +1,10 @@
 package com.ireul.nerf.application;
 
 import com.ireul.nerf.command.Command;
-import com.ireul.nerf.command.Entry;
+import com.ireul.nerf.command.Handle;
+import com.ireul.nerf.utils.AnnotationUtils;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 /**
@@ -16,36 +16,35 @@ public class BaseApplication implements Application {
      * Life Cycle
      ******************************************************************************************************************/
 
-    public void setup() {
+    public void boot() {
     }
 
     /**
-     * Handle command-line arguments, search and execute command method
+     * Handle Command by searching Handle annotated method
      *
-     * @param args command-line arguments
+     * @param command the command to handle
      */
-    public void execute(String[] args) {
-        Command command = Command.decode(args);
-        Arrays.stream(this.getClass().getMethods())
-                .filter(m -> !Modifier.isStatic(m.getModifiers()))
-                .forEach(method -> {
-                    Entry entry = method.getAnnotation(Entry.class);
-                    if (entry != null &&
-                            Arrays.stream(entry.value()).anyMatch(command.name::equalsIgnoreCase)) {
-                        try {
-                            method.invoke(this, command);
-                        } catch (IllegalAccessException | InvocationTargetException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                });
+    public void execute(Command command) {
+        AnnotationUtils.findInstanceMethod(this, Handle.class, (method, handle) -> {
+            if (Arrays.stream(handle.value()).anyMatch(command.name::equalsIgnoreCase)) {
+                try {
+                    method.invoke(this, command);
+                } catch (IllegalAccessException | InvocationTargetException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
     }
 
     /*******************************************************************************************************************
      * Command
      ******************************************************************************************************************/
 
-    @Entry("run")
-    public void handleRun(Command command) {
+    @Handle(Command.DEFAULT_NAME)
+    public void handleHelp(Command command) {
+    }
+
+    @Handle("web")
+    public void handleWeb(Command command) {
     }
 }

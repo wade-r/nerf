@@ -9,7 +9,7 @@ import com.ireul.nerf.application.BaseApplication;
 public class Main extends BaseApplication {
 
     public static void main(String[] args) {
-        Nerf.boot(Main.class, args);
+        Nerf.ignite(Main.class, args);
     }
 
 }

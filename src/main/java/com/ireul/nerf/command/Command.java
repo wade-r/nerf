@@ -8,7 +8,7 @@ import java.util.HashMap;
  */
 public class Command {
 
-    public static final String DEFAULT_NAME = "run";
+    public static final String DEFAULT_NAME = "help";
 
     public String name;
 
