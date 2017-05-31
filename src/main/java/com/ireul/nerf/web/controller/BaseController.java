@@ -1,8 +1,7 @@
 package com.ireul.nerf.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
+import com.ireul.nerf.web.server.Request;
+import com.ireul.nerf.web.server.Response;
 
 /**
  * Basic implementation of Controller
@@ -13,40 +12,28 @@ import java.util.HashMap;
  */
 public class BaseController implements Controller {
 
-    private HttpServletResponse response;
+    private Response response;
 
-    private HttpServletRequest request;
-
-    private HashMap<String, Object> locals = new HashMap<>();
+    private Request request;
 
     @Override
-    public HttpServletRequest request() {
-        return request;
+    public Request request() {
+        return this.request;
     }
 
     @Override
-    public HttpServletResponse response() {
-        return response;
+    public Response response() {
+        return this.response;
     }
 
     @Override
-    public void request(HttpServletRequest request) {
+    public void request(Request request) {
         this.request = request;
     }
 
     @Override
-    public void response(HttpServletResponse response) {
+    public void response(Response response) {
         this.response = response;
-    }
-
-    @Override
-    public void local(String key, Object value) {
-        this.locals.put(key, value);
-    }
-
-    @Override
-    public <T> T local(String key) {
-        return (T) this.locals.get(key);
     }
 
     @Override

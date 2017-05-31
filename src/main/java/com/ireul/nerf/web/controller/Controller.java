@@ -1,11 +1,10 @@
 package com.ireul.nerf.web.controller;
 
-import com.google.gson.Gson;
+import com.ireul.nerf.web.server.Request;
+import com.ireul.nerf.web.server.Response;
+import org.eclipse.jetty.http.HttpMethod;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.HashMap;
 
 /**
  * Controller interface
@@ -14,145 +13,113 @@ import java.io.PrintWriter;
  */
 public interface Controller {
 
-    String CONTENT_TYPE = "Content-Type";
+    /**
+     * Get the {@link Request}
+     *
+     * @return request
+     */
+    Request request();
 
-    String LOCATION = "Location";
+    /**
+     * Get the {@link Response}
+     *
+     * @return response
+     */
+    Response response();
 
-    String TEXT_PLAIN = "text/plain";
+    /**
+     * Set the {@link Request}
+     *
+     * @param request request
+     */
+    void request(Request request);
 
-    String TEXT_HTML = "text/html";
+    /**
+     * Set the {@link Response}
+     *
+     * @param response response
+     */
+    void response(Response response);
 
-    String APPLICATION_JSON = "application/json";
-
-    /*******************************************************************************************************************
-     * Context accessing
-     ******************************************************************************************************************/
-
-    HttpServletRequest request();
-
-    HttpServletResponse response();
-
-    void request(HttpServletRequest request);
-
-    void response(HttpServletResponse response);
-
-    void local(String key, Object value);
-
-    <T> T local(String key);
-
-    /*******************************************************************************************************************
-     * Life Cycle
-     ******************************************************************************************************************/
-
+    /**
+     * will be invoked before action
+     */
     void beforeAction();
 
-    /*******************************************************************************************************************
-     * Request
-     ******************************************************************************************************************/
-
-    default String method() {
-        return request().getMethod();
+    default HttpMethod method() {
+        return request().method();
     }
 
     default boolean isGet() {
-        return method().equalsIgnoreCase("GET");
+        return HttpMethod.GET == method();
     }
 
     default boolean isPost() {
-        return method().equalsIgnoreCase("POST");
+        return HttpMethod.POST == method();
     }
 
     default boolean isDelete() {
-        return method().equalsIgnoreCase("DELETE");
+        return HttpMethod.DELETE == method();
     }
 
     default boolean isPut() {
-        return method().equalsIgnoreCase("PUT");
-    }
-
-    default boolean isPatch() {
-        return method().equalsIgnoreCase("PATCH");
-    }
-
-    default boolean isUpdate() {
-        return isPatch() || isPut();
+        return HttpMethod.PUT == method();
     }
 
     default String queryString() {
-        return request().getQueryString();
+        return request().queryString();
     }
 
-    default String url() {
-        return request().getRequestURI();
+    default HashMap<String, String> namedPaths() {
+        return request().namedPaths();
     }
 
-    /*******************************************************************************************************************
-     * Response
-     ******************************************************************************************************************/
+    default String namedPath(String name) {
+        return request().namedPath(name);
+    }
 
     default void header(String name, String value) {
-        response().setHeader(name, value);
+        response().header(name, value);
     }
 
-    default void statusCode(int statusCode) {
-        response().setStatus(statusCode);
+    default void status(int status) {
+        response().status(status);
     }
 
-    default void contentType(String contentType) {
-        header(CONTENT_TYPE, contentType);
+    default void type(String type) {
+        response().type(type);
     }
 
-    default void redirect(String location, int statusCode) {
-        if (location == null) {
-            location = "/";
-        }
-        header(LOCATION, location);
-        statusCode(statusCode);
-        bodyPlain("Redirect to " + location);
+    default void length(long length) {
+        response().length(length);
     }
 
-    default void redirect(String location) {
-        redirect(location, HttpServletResponse.SC_MOVED_TEMPORARILY);
+    default void body(String body) {
+        response().body(body);
     }
 
-    default void body(char[] bytes) {
-        PrintWriter writer;
-        try {
-            writer = response().getWriter();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        writer.write(bytes);
-        writer.close();
-    }
-
-    default void body(String string) {
-        PrintWriter writer;
-        try {
-            writer = response().getWriter();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        writer.write(string);
-        writer.close();
+    default void body(char[] chars) {
+        response().body(chars);
     }
 
     default void bodyPlain(String string) {
-        contentType(TEXT_PLAIN);
-        body(string);
+        response().bodyPlain(string);
     }
 
     default void bodyJson(Object object) {
-        contentType(APPLICATION_JSON);
-        Gson gson = new Gson();
-        body(gson.toJson(object));
+        response().bodyJson(object);
     }
 
-    default void bodyHTML(String string) {
-        contentType(TEXT_HTML);
-        body(string);
+    default void bodyHtml(String html) {
+        response().bodyHtml(html);
+    }
+
+    default void redirect(String location, int status) {
+        response().redirect(location, status);
+    }
+
+    default void redirect(String location) {
+        response().redirect(location);
     }
 
 }

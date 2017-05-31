@@ -23,9 +23,10 @@ public class JettyHandler extends SessionHandler {
 
     @Override
     public void doHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        // Nerf needs baseRequest act same as request
+        assert request == baseRequest;
         for (Route route : this.router.routes()) {
-            if (route.match(baseRequest)) {
-                route.execute(request, response);
+            if (route.matchAndExecute(request, response)) {
                 baseRequest.setHandled(true);
                 return;
             }

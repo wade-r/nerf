@@ -1,16 +1,19 @@
 package com.ireul.nerf.web.route;
 
 import com.ireul.nerf.web.controller.Controller;
-import org.eclipse.jetty.server.Request;
+import com.ireul.nerf.web.server.Request;
+import com.ireul.nerf.web.server.Response;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 
 /**
+ * Route is composed with matching rules and a target class and a target {@link Method}
  * Created by ryan on 5/31/17.
  */
 public class Route {
@@ -21,28 +24,22 @@ public class Route {
 
     private final Method method;
 
-    private HashMap<String, String> namedParams;
-
-    public HashMap<String, String> namedParams() {
-        if (this.namedParams == null)
-            this.namedParams = new HashMap<>();
-        return this.namedParams;
-    }
-
     public Route(Class<? extends Controller> controllerClass, Method method, Action action) {
         this.action = action;
         this.controllerClass = controllerClass;
         this.method = method;
     }
 
-    public boolean match(Request request) {
+    public boolean match(HttpServletRequest request, HashMap<String, String> namedPaths) {
         // check method
         if (Arrays.stream(action.method()).noneMatch(m -> m.is(request.getMethod()))) {
             return false;
         }
 
+        URI uri = URI.create(request.getRequestURL().toString());
+
         // check path components
-        String[] components = request.getHttpURI().getPath().split("/");
+        String[] components = uri.getPath().split("/");
         String[] matchComponents = this.action.value().split("/");
 
         if (components.length != matchComponents.length) {
@@ -54,7 +51,7 @@ public class Route {
             String component = components[i];
 
             if (matchComponent.startsWith(":")) {
-                namedParams().put(matchComponent.substring(1), component);
+                namedPaths.put(matchComponent.substring(1), component);
             } else {
                 if (!matchComponent.equals(component)) {
                     return false;
@@ -89,13 +86,23 @@ public class Route {
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         try {
             Controller controller = this.controllerClass.newInstance();
-            controller.request(request);
-            controller.response(response);
+            controller.request(new Request(request));
+            controller.response(new Response(response));
             controller.beforeAction();
             this.method.invoke(controller);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean matchAndExecute(HttpServletRequest request, HttpServletResponse response) {
+        HashMap<String, String> namedPaths = new HashMap<>();
+        if (match(request, namedPaths)) {
+            request.setAttribute(Route.class.getCanonicalName(), namedPaths);
+            execute(request, response);
+            return true;
+        }
+        return false;
     }
 
 }
