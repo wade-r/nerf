@@ -1,6 +1,7 @@
 package com.ireul.nerf.application;
 
 import com.ireul.nerf.command.Command;
+import com.ireul.nerf.inject.Injector;
 
 /**
  * Application abstract a Nerf application
@@ -8,7 +9,7 @@ import com.ireul.nerf.command.Command;
  * <p>
  * Created by ryan on 5/27/17.
  */
-public interface Application {
+public interface Application extends Injector {
 
     /**
      * Bootstrap the Application

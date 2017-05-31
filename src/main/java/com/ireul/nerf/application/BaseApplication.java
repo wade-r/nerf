@@ -2,6 +2,7 @@ package com.ireul.nerf.application;
 
 import com.ireul.nerf.command.Command;
 import com.ireul.nerf.command.Handle;
+import com.ireul.nerf.inject.Injector;
 import com.ireul.nerf.utils.AnnotationUtils;
 import com.ireul.nerf.web.route.SimpleRouter;
 import com.ireul.nerf.web.server.JettyHandler;
@@ -13,7 +14,7 @@ import java.util.Arrays;
 /**
  * Created by ryan on 5/27/17.
  */
-public class BaseApplication implements Application {
+public class BaseApplication implements Application, Injector {
 
     private JettyServer server;
 
@@ -30,13 +31,14 @@ public class BaseApplication implements Application {
      * @param command the command to handle
      */
     public void execute(Command command) {
-        AnnotationUtils.findInstanceMethod(this, Handle.class, (method, handle) -> {
-            if (Arrays.stream(handle.value()).anyMatch(command.name::equalsIgnoreCase)) {
-                try {
-                    method.invoke(this, command);
-                } catch (IllegalAccessException | InvocationTargetException e1) {
-                    e1.printStackTrace();
-                }
+        AnnotationUtils.forEachInstanceMethod(this.getClass(), Handle.class, (method, handle) -> {
+            if (Arrays.stream(handle.value()).noneMatch(command.name::equalsIgnoreCase)) {
+                return;
+            }
+            try {
+                method.invoke(this, command);
+            } catch (IllegalAccessException | InvocationTargetException e1) {
+                e1.printStackTrace();
             }
         });
     }
@@ -55,7 +57,7 @@ public class BaseApplication implements Application {
         if (bind == null) {
             bind = "127.0.0.1:7788";
         }
-        SimpleRouter router = SimpleRouter.scan(this.getClass().getPackage().getName());
+        SimpleRouter router = SimpleRouter.scan(this);
         this.server = new JettyServer(bind, new JettyHandler(router));
         try {
             this.server.start();

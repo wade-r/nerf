@@ -1,5 +1,7 @@
 package com.ireul.nerf.web.route;
 
+import com.ireul.nerf.application.Application;
+import com.ireul.nerf.inject.Injector;
 import com.ireul.nerf.web.controller.Controller;
 import com.ireul.nerf.web.server.Request;
 import com.ireul.nerf.web.server.Response;
@@ -20,12 +22,15 @@ public class SimpleRouter implements Router {
 
     private ArrayList<Route> routes;
 
-    public SimpleRouter(Collection<Route> routes) {
+    private Injector injector;
+
+    public SimpleRouter(Collection<Route> routes, Injector injector) {
         this.routes = new ArrayList<>(routes);
+        this.injector = injector;
     }
 
-    public static SimpleRouter scan(String basePackage) {
-        return new SimpleRouter(RouteUtils.scanRoutes(basePackage));
+    public static SimpleRouter scan(Application application) {
+        return new SimpleRouter(RouteUtils.scanRoutes(application.getClass().getPackage().getName()), application);
     }
 
     private void matchRoute(Route route, HttpServletRequest request, RouteMatch output) {
@@ -53,8 +58,11 @@ public class SimpleRouter implements Router {
                     wrappedRequest.namedPaths(match.namedPaths());
                     // create wrapped response
                     Response wrappedResponse = new Response(response);
-                    // initialize a controller and set request/response
+                    // initialize a controller
                     Controller controller = route.controllerClass().newInstance();
+                    // inject fields
+                    this.injector.injectTo(controller);
+                    // set request/response
                     controller.request(wrappedRequest);
                     controller.response(wrappedResponse);
                     // invoke beforeAction

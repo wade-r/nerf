@@ -21,10 +21,12 @@ public class RouteUtils {
     public static List<Route> scanRoutes(String basePackage) {
         ArrayList<Route> routes = new ArrayList<>();
         Reflections reflections = new Reflections(basePackage);
-        reflections.getSubTypesOf(Controller.class).forEach(c -> {
-            AnnotationUtils.findInstanceMethod(c, Action.class, (method, action) -> {
-                routes.add(new Route(c, method, action));
-            });
+        reflections.getSubTypesOf(Controller.class).forEach(controllerClass -> {
+            AnnotationUtils.forEachInstanceMethod(
+                    controllerClass,
+                    Action.class,
+                    (method, action) -> routes.add(new Route(controllerClass, method, action))
+            );
         });
         return routes;
     }

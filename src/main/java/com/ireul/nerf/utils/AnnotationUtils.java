@@ -1,9 +1,10 @@
 package com.ireul.nerf.utils;
 
+import org.reflections.ReflectionUtils;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 
 /**
  * Created by ryan on 5/30/17.
@@ -17,10 +18,6 @@ public class AnnotationUtils {
 
     }
 
-    public static <T extends Annotation> void findInstanceMethod(Object object, Class<T> annotationType, MethodAnnotationHandler<T> handler) {
-        findInstanceMethod(object.getClass(), annotationType, handler);
-    }
-
     /**
      * Find all instance methods annotated with specified annotation,
      * Will invoke handler multiple times if method is annotated with same annotation multiple times.
@@ -31,15 +28,22 @@ public class AnnotationUtils {
      * @param <T>            annotation type
      * @param <U>            class type
      */
-    public static <T extends Annotation, U> void findInstanceMethod(Class<U> clazz, Class<T> annotationType, MethodAnnotationHandler<T> handler) {
-        Arrays.stream(clazz.getMethods())
-                .filter(m -> !Modifier.isStatic(m.getModifiers()))
-                .forEach(method -> {
-                    T[] annotations = method.getAnnotationsByType(annotationType);
-                    for (T annotation : annotations) {
-                        handler.handle(method, annotation);
-                    }
-                });
+    @SuppressWarnings("unchecked")
+    public static <T extends Annotation, U> void forEachInstanceMethod(Class<U> clazz, Class<T> annotationType, MethodAnnotationHandler<T> handler) {
+        for (Method method : ReflectionUtils.getAllMethods(clazz)) {
+            // skip static
+            if (Modifier.isStatic(method.getModifiers())) continue;
+            // find annotations
+            T[] annotations = method.getAnnotationsByType(annotationType);
+            if (annotations.length > 0) {
+                // make accessible
+                if (!method.isAccessible()) method.setAccessible(true);
+                // execute annotations
+                for (T annotation : annotations) {
+                    handler.handle(method, annotation);
+                }
+            }
+        }
     }
 
 }
