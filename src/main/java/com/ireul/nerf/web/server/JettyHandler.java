@@ -25,7 +25,7 @@ public class JettyHandler extends SessionHandler {
     public void doHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         for (Route route : this.router.routes()) {
             if (route.match(baseRequest)) {
-                route.execute(baseRequest, response);
+                route.execute(request, response);
                 baseRequest.setHandled(true);
                 return;
             }

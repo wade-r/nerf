@@ -3,9 +3,11 @@ package com.ireul.nerf.web.route;
 import com.ireul.nerf.web.controller.Controller;
 import org.eclipse.jetty.server.Request;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -34,13 +36,18 @@ public class Route {
     }
 
     public boolean match(Request request) {
+        // check method
+        if (Arrays.stream(action.method()).noneMatch(m -> m.is(request.getMethod()))) {
+            return false;
+        }
+
+        // check path components
         String[] components = request.getHttpURI().getPath().split("/");
         String[] matchComponents = this.action.value().split("/");
 
         if (components.length != matchComponents.length) {
             return false;
         }
-
 
         for (int i = 0; i < components.length; i++) {
             String matchComponent = matchComponents[i];
@@ -55,10 +62,31 @@ public class Route {
             }
         }
 
-        return true;
+        // check accept
+        String accept = request.getHeader("Accept");
+        if (accept == null || accept.length() == 0) {
+            return true;
+        }
+        String[] accepts = accept.split(",");
+        String[] matchAccepts = this.action.accept().split(",");
+        for (String a : accepts) {
+            // trim "text/plain;q=0.x" style
+            a = a.split(";")[0];
+            for (String m : matchAccepts) {
+                String[] as = a.trim().split("/");
+                String[] ms = m.trim().split("/");
+                if (as.length == 2 && ms.length == 2) {
+                    return (ms[0].equals("*") || ms[0].equalsIgnoreCase(as[0])) && (ms[1].equals("*") || ms[1].equalsIgnoreCase(as[1]));
+                } else {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
-    public void execute(Request request, HttpServletResponse response) {
+    public void execute(HttpServletRequest request, HttpServletResponse response) {
         try {
             Controller controller = this.controllerClass.newInstance();
             controller.request(request);

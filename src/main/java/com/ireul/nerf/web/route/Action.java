@@ -15,5 +15,5 @@ public @interface Action {
 
     HttpMethod[] method() default {HttpMethod.GET};
 
-    String allowedType() default "*/*";
+    String accept() default "*/*";
 }

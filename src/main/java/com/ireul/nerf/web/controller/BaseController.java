@@ -5,6 +5,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
 /**
+ * Basic implementation of Controller
+ * <p>
+ * Just storage request, response for later fetch
+ * <p>
  * Created by ryan on 5/30/17.
  */
 public class BaseController implements Controller {
@@ -41,8 +45,8 @@ public class BaseController implements Controller {
     }
 
     @Override
-    public Object local(String key) {
-        return this.locals.get(key);
+    public <T> T local(String key) {
+        return (T) this.locals.get(key);
     }
 
     @Override

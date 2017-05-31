@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
+ * Controller interface
+ * Something can storage and fetch request response
  * Created by ryan on 5/27/17.
  */
 public interface Controller {
@@ -36,7 +38,7 @@ public interface Controller {
 
     void local(String key, Object value);
 
-    Object local(String key);
+    <T> T local(String key);
 
     /*******************************************************************************************************************
      * Life Cycle
