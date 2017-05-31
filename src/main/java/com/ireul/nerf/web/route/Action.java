@@ -14,6 +14,4 @@ public @interface Action {
     String value();
 
     HttpMethod[] method() default {HttpMethod.GET};
-
-    String accept() default "*/*";
 }

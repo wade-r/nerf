@@ -3,7 +3,7 @@ package com.ireul.nerf.application;
 import com.ireul.nerf.command.Command;
 import com.ireul.nerf.command.Handle;
 import com.ireul.nerf.utils.AnnotationUtils;
-import com.ireul.nerf.web.route.Router;
+import com.ireul.nerf.web.route.SimpleRouter;
 import com.ireul.nerf.web.server.JettyHandler;
 import com.ireul.nerf.web.server.JettyServer;
 
@@ -55,7 +55,7 @@ public class BaseApplication implements Application {
         if (bind == null) {
             bind = "127.0.0.1:7788";
         }
-        Router router = Router.scan(this.getClass().getPackage().getName());
+        SimpleRouter router = SimpleRouter.scan(this.getClass().getPackage().getName());
         this.server = new JettyServer(bind, new JettyHandler(router));
         try {
             this.server.start();

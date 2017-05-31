@@ -1,6 +1,5 @@
 package com.ireul.nerf.web.server;
 
-import com.ireul.nerf.web.route.Route;
 import org.eclipse.jetty.http.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +12,8 @@ import java.util.HashMap;
  */
 public class Request {
 
+    public static final String NAMED_PATHS = "com.ireul.nerf.NamedPaths";
+
     private final HttpServletRequest request;
 
     /**
@@ -24,14 +25,18 @@ public class Request {
         this.request = request;
     }
 
+    public void namedPaths(HashMap<String, String> namedPaths) {
+        this.request.setAttribute(NAMED_PATHS, namedPaths);
+    }
+
     @SuppressWarnings("unchecked")
     public HashMap<String, String> namedPaths() {
-        HashMap<String, String> attribute = (HashMap<String, String>) this.request.getAttribute(Route.class.getCanonicalName());
-        if (attribute == null) {
-            attribute = new HashMap<>();
-            this.request.setAttribute(Route.class.getCanonicalName(), attribute);
+        HashMap<String, String> namedPaths = (HashMap<String, String>) this.request.getAttribute(NAMED_PATHS);
+        if (namedPaths == null) {
+            namedPaths = new HashMap<>();
+            namedPaths(namedPaths);
         }
-        return attribute;
+        return namedPaths;
     }
 
     public String namedPath(String name) {

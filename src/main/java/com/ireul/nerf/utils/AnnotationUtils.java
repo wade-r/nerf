@@ -21,6 +21,16 @@ public class AnnotationUtils {
         findInstanceMethod(object.getClass(), annotationType, handler);
     }
 
+    /**
+     * Find all instance methods annotated with specified annotation,
+     * Will invoke handler multiple times if method is annotated with same annotation multiple times.
+     *
+     * @param clazz          class to find
+     * @param annotationType annotation to find
+     * @param handler        handle method / annotation combination
+     * @param <T>            annotation type
+     * @param <U>            class type
+     */
     public static <T extends Annotation, U> void findInstanceMethod(Class<U> clazz, Class<T> annotationType, MethodAnnotationHandler<T> handler) {
         Arrays.stream(clazz.getMethods())
                 .filter(m -> !Modifier.isStatic(m.getModifiers()))

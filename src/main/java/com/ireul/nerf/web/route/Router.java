@@ -1,31 +1,21 @@
 package com.ireul.nerf.web.route;
 
-import com.ireul.nerf.utils.AnnotationUtils;
-import com.ireul.nerf.web.controller.Controller;
-import org.reflections.Reflections;
-
-import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
- * Created by ryan on 5/31/17.
+ * Router is abstraction of Nerf routing system
+ * Created by ryanw on 2017/5/31.
  */
-public class Router {
+public interface Router {
 
-    private final ArrayList<Route> routes = new ArrayList<>();
-
-    public static Router scan(String base) {
-        Router router = new Router();
-        Reflections reflections = new Reflections(base);
-        reflections.getSubTypesOf(Controller.class).forEach(c -> {
-            AnnotationUtils.findInstanceMethod(c, Action.class, (method, action) -> {
-                router.routes().add(new Route(c, method, action));
-            });
-        });
-        return router;
-    }
-
-    public ArrayList<Route> routes() {
-        return routes;
-    }
+    /**
+     * Handles a Servlet Request/Response pair
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @return if route rule found and properly handled
+     */
+    boolean route(HttpServletRequest request, HttpServletResponse response);
 
 }
