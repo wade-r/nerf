@@ -18,11 +18,15 @@ public class AnnotationUtils {
     }
 
     public static <T extends Annotation> void findInstanceMethod(Object object, Class<T> annotationType, MethodAnnotationHandler<T> handler) {
-        Arrays.stream(object.getClass().getMethods())
+        findInstanceMethod(object.getClass(), annotationType, handler);
+    }
+
+    public static <T extends Annotation, U> void findInstanceMethod(Class<U> clazz, Class<T> annotationType, MethodAnnotationHandler<T> handler) {
+        Arrays.stream(clazz.getMethods())
                 .filter(m -> !Modifier.isStatic(m.getModifiers()))
                 .forEach(method -> {
-                    T annotation = method.getAnnotation(annotationType);
-                    if (annotation != null) {
+                    T[] annotations = method.getAnnotationsByType(annotationType);
+                    for (T annotation : annotations) {
                         handler.handle(method, annotation);
                     }
                 });

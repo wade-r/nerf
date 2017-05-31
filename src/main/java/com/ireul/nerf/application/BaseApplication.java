@@ -3,6 +3,9 @@ package com.ireul.nerf.application;
 import com.ireul.nerf.command.Command;
 import com.ireul.nerf.command.Handle;
 import com.ireul.nerf.utils.AnnotationUtils;
+import com.ireul.nerf.web.route.Router;
+import com.ireul.nerf.web.server.JettyHandler;
+import com.ireul.nerf.web.server.JettyServer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -11,6 +14,8 @@ import java.util.Arrays;
  * Created by ryan on 5/27/17.
  */
 public class BaseApplication implements Application {
+
+    private JettyServer server;
 
     /*******************************************************************************************************************
      * Life Cycle
@@ -46,5 +51,14 @@ public class BaseApplication implements Application {
 
     @Handle("web")
     public void handleWeb(Command command) {
+        Router router = Router.scan(this.getClass().getPackage().getName());
+        this.server = new JettyServer("127.0.0.1:7788", new JettyHandler(router));
+        try {
+            this.server.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(100);
+        }
     }
+
 }

@@ -1,7 +1,7 @@
 package com.ireul.nerfweb.controllers;
 
-import com.ireul.nerf.web.controller.Action;
 import com.ireul.nerf.web.controller.BaseController;
+import com.ireul.nerf.web.route.Action;
 
 /**
  * Created by ryan on 5/30/17.

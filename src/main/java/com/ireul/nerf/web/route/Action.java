@@ -1,4 +1,4 @@
-package com.ireul.nerf.web.controller;
+package com.ireul.nerf.web.route;
 
 import org.eclipse.jetty.http.HttpMethod;
 
