@@ -51,8 +51,12 @@ public class BaseApplication implements Application {
 
     @Handle("web")
     public void handleWeb(Command command) {
+        String bind = command.options.get("bind");
+        if (bind == null) {
+            bind = "127.0.0.1:7788";
+        }
         Router router = Router.scan(this.getClass().getPackage().getName());
-        this.server = new JettyServer("127.0.0.1:7788", new JettyHandler(router));
+        this.server = new JettyServer(bind, new JettyHandler(router));
         try {
             this.server.start();
         } catch (Exception e) {

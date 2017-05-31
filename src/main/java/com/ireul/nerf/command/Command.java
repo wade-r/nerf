@@ -22,10 +22,10 @@ public class Command {
         for (String e : args) {
             if (e.startsWith("-")) {
                 if (lastOption == null) {
-                    lastOption = e.substring(1);
+                    lastOption = e.substring(e.startsWith("--") ? 2 : 1);
                 } else {
                     command.options.put(lastOption, "true");
-                    lastOption = e.substring(1);
+                    lastOption = e.substring(e.startsWith("--") ? 2 : 1);
                 }
             } else {
                 if (lastOption == null) {
