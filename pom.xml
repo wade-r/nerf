@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ireul.nerf</groupId>
     <artifactId>nerf</artifactId>
-    <version>0.1.20170602-SNAPSHOT</version>
+    <version>0.1.20170602</version>
 
     <name>nerf</name>
     <description>Another light-weight Java web framework</description>
@@ -28,7 +26,8 @@
     <scm>
         <connection>scm:git:https://github.com/wade-r/nerf.git</connection>
         <url>https://github.com/wade-r/nerf</url>
-    </scm>
+      <tag>v0.1.20170602</tag>
+  </scm>
 
     <dependencies>
         <dependency>
