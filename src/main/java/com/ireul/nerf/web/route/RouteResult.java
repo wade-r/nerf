@@ -24,7 +24,7 @@ public class RouteResult {
     /**
      * Set the {@link #route}
      *
-     * @param route
+     * @param route {@link Route} to set
      */
     public void route(Route route) {
         this.route = route;

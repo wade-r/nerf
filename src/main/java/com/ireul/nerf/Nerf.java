@@ -5,9 +5,7 @@ import com.ireul.nerf.command.Command;
 
 /**
  * This is a helper class for booting a Nerf application.
- * <p>
  * <p>Most common usage may looks like below:</p>
- * <p>
  * <pre>
  *     public class MyMain extends BaseApplication {
  *
@@ -17,15 +15,12 @@ import com.ireul.nerf.command.Command;
  *
  *     }
  * </pre>
- * <p>
  * <p>Remember, <code>MyMain</code> MUST be at the TOP of ALL your packages, component searching are based on
  * sub-packages of <code>MyMain</code>.</p>
- * <p>
  * <p>Command-line arguments will be parsed into a {@link com.ireul.nerf.command.Command} instance, and send to
  * {@link Application#execute(Command)}. In most case, <code>MyMain</code> is a subclass of
  * {@link com.ireul.nerf.application.BaseApplication}, it will find its instance methods marked by
  * {@link com.ireul.nerf.command.Handle} annotation and invoke that method.</p>
- * <p>
  * <p><code>MyClass</code> will also be the default {@link com.ireul.nerf.inject.Injector}, during initialization of
  * {@link com.ireul.nerf.web.controller.Controller} classes, fields marked by {@link com.ireul.nerf.inject.Inject} will be assigned from <code>MyClass</code></p>
  *

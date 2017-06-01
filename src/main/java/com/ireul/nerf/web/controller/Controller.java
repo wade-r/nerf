@@ -48,14 +48,14 @@ public interface Controller {
     /**
      * Set the {@link WebContext}
      *
-     * @param context
+     * @param context current {@link WebContext}
      */
     void context(WebContext context);
 
     /**
      * Return the web context
      *
-     * @return
+     * @return current {@link WebContext}
      */
     WebContext context();
 

@@ -42,7 +42,7 @@ public interface Injector {
      */
     // TODO: 2017/6/1 optimize performance
     @SuppressWarnings("unchecked")
-    default <T> void injectTo(T target) {
+    default void injectTo(Object target) {
         ReflectionUtils.getAllFields(target.getClass()).forEach(f -> {
             // skip static
             if (Modifier.isStatic(f.getModifiers())) return;

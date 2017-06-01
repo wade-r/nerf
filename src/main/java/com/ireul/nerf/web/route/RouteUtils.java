@@ -43,6 +43,7 @@ public class RouteUtils {
      * @param pattern pattern to match
      * @param path    path to match
      * @param output  the output
+     * @return true if matched
      */
     public static boolean matchPath(String pattern, String path, RouteResult output) {
         if (pattern == null || path == null) {
