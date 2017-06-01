@@ -61,6 +61,17 @@ public class WebContext {
         }
     }
 
+    public void stop() {
+        if (this.server == null) return;
+        try {
+            this.server.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Failed to stop Jetty gracefully");
+            System.exit(100);
+        }
+    }
+
     public Application application() {
         return this.application;
     }

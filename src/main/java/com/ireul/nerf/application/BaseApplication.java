@@ -22,6 +22,12 @@ public class BaseApplication implements Application, Injector {
      ******************************************************************************************************************/
 
     public void boot() {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+    }
+
+    public void shutdown() {
+        if (this.webContext != null)
+            this.webContext.stop();
     }
 
     /**
