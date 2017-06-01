@@ -3,30 +3,36 @@ package com.ireul.nerf.web.route;
 import java.util.HashMap;
 
 /**
- * Route rule evaluation result
- * Created by ryanw on 2017/5/31.
+ * This class represents route matching result
+ * <p>If {@link #route} is not null, means a {@link Route} is found and {@link #namedPaths} may contains named paths</p>
+ *
+ * @author Ryan Wade
  */
 public class RouteResult {
-
-    public void reset() {
-        this.route = null;
-        if (this.namedPaths != null) {
-            this.namedPaths.clear();
-        }
-    }
 
     private HashMap<String, String> namedPaths = null;
 
     private Route route = null;
 
+    /**
+     * @return {@link #route}
+     */
     public Route route() {
         return this.route;
     }
 
+    /**
+     * Set the {@link #route}
+     *
+     * @param route
+     */
     public void route(Route route) {
         this.route = route;
     }
 
+    /**
+     * @return {@link #namedPaths}, create if not exists
+     */
     public HashMap<String, String> namedPaths() {
         if (this.namedPaths == null) {
             this.namedPaths = new HashMap<>();
@@ -34,8 +40,21 @@ public class RouteResult {
         return this.namedPaths;
     }
 
+    /**
+     * @return if {@link #namedPaths} not null
+     */
     public boolean hasNamedPaths() {
         return this.namedPaths != null;
+    }
+
+    /**
+     * Reset, set {@link #route} to null and clear {@link #namedPaths} if not null
+     */
+    public void reset() {
+        this.route = null;
+        if (this.namedPaths != null) {
+            this.namedPaths.clear();
+        }
     }
 
 }

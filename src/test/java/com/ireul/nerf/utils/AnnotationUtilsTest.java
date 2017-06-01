@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.lang.annotation.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by ryan on 6/1/17.

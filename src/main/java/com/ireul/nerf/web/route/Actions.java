@@ -6,7 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by ryan on 5/30/17.
+ * Java runtime wrapper for multiple {@link Action}
+ *
+ * @author Ryan Wade
+ * @see Action
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

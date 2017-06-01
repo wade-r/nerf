@@ -6,8 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Inject marks a field as injectable
- * Created by ryan on 5/27/17.
+ * This annotation marks a field as a injection target
+ *
+ * @author Ryan Wade
+ * @see Provide
+ * @see Injector
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

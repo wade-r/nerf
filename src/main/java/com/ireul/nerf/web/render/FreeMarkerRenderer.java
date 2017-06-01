@@ -10,12 +10,20 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 
 /**
- * Created by ryan on 6/1/17.
+ * This is a {@link Renderer} implementation with FreeMarker template engine.
+ *
+ * @author Ryan Wade
+ * @see Renderer
  */
 public class FreeMarkerRenderer implements Renderer {
 
     Configuration configuration;
 
+    /**
+     * Initialize a FreeMarker instance
+     *
+     * @param resourceClass class for templates loading, basically your application class
+     */
     public FreeMarkerRenderer(Class<?> resourceClass) {
         this.configuration = new Configuration(Configuration.VERSION_2_3_26);
         this.configuration.setClassForTemplateLoading(resourceClass, "/views");

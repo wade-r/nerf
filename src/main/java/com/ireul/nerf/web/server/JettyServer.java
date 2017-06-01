@@ -1,15 +1,14 @@
 package com.ireul.nerf.web.server;
 
-import com.ireul.nerf.web.WebContext;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by ryan on 5/31/17.
+ * This class wraps a {@link Server}
+ *
+ * @author Ryan Wade
  */
 public class JettyServer {
 
@@ -17,13 +16,17 @@ public class JettyServer {
 
     private int bindPort;
 
-    private WebContext.JettyHandler handler;
+    private Handler handler;
 
     private Server server;
 
-    private final Logger logger = LoggerFactory.getLogger(JettyServer.class);
-
-    public JettyServer(String bindAddress, WebContext.JettyHandler handler) {
+    /**
+     * Initialize a server
+     *
+     * @param bindAddress address to bind
+     * @param handler     handler for request handling
+     */
+    public JettyServer(String bindAddress, Handler handler) {
         if (bindAddress == null || bindAddress.length() == 0) {
             this.bindHost = "0.0.0.0";
             this.bindPort = 8080;
@@ -41,6 +44,11 @@ public class JettyServer {
         this.handler = handler;
     }
 
+    /**
+     * Starts the server
+     *
+     * @throws Exception any exception
+     */
     public void start() throws Exception {
         this.server = new Server(new QueuedThreadPool(200, 8, 60000));
         HttpConfiguration configuration = new HttpConfiguration();
@@ -58,6 +66,11 @@ public class JettyServer {
         this.server.start();
     }
 
+    /**
+     * Stop the server
+     *
+     * @throws Exception any exception
+     */
     public void stop() throws Exception {
         if (this.server != null) {
             this.server.stop();

@@ -8,8 +8,9 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 
 /**
- * Response wraps a {@link HttpServletResponse}
- * Created by ryan on 5/31/17.
+ * This class wraps a {@link HttpServletResponse}, providing various helper methods.
+ *
+ * @author Ryan Wade
  */
 public class Response {
 
@@ -29,10 +30,20 @@ public class Response {
 
     private HashMap<String, Object> locals;
 
+    /**
+     * Initialize with {@link HttpServletResponse}
+     *
+     * @param response servlet response
+     */
     public Response(HttpServletResponse response) {
         this.response = response;
     }
 
+    /**
+     * Get the {@link HttpServletResponse}
+     *
+     * @return servlet response
+     */
     public HttpServletResponse raw() {
         return this.response;
     }
@@ -165,6 +176,11 @@ public class Response {
         redirect(location, HttpServletResponse.SC_MOVED_TEMPORARILY);
     }
 
+    /**
+     * Get all locals (for template rendering)
+     *
+     * @return all locals
+     */
     public HashMap<String, Object> locals() {
         if (this.locals == null) {
             this.locals = new HashMap<>();
@@ -172,10 +188,23 @@ public class Response {
         return this.locals;
     }
 
+    /**
+     * Set local value by name
+     *
+     * @param name  name of value
+     * @param value the value
+     */
     public void local(String name, Object value) {
         locals().put(name, value);
     }
 
+    /**
+     * Get local value
+     *
+     * @param name name of value
+     * @param <T>  value type
+     * @return the value
+     */
     @SuppressWarnings("unchecked")
     public <T> T local(String name) {
         return (T) locals().get(name);

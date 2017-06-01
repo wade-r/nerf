@@ -7,20 +7,33 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
- * Created by ryan on 5/30/17.
+ * This is a helper class providing annotation related methods.
+ *
+ * @author Ryan Wade
  */
 public class AnnotationUtils {
 
+    /**
+     * Functional interface for handling a Method / Annotation pair
+     *
+     * @param <T> Annotation type
+     */
     @FunctionalInterface
     public interface MethodAnnotationHandler<T> {
 
+        /**
+         * Handle a Method / Annotation pair
+         *
+         * @param method     {@link Method} to handle
+         * @param annotation {@link Annotation} to handle
+         */
         void handle(Method method, T annotation);
 
     }
 
     /**
-     * Find all instance methods annotated with specified annotation,
-     * Will invoke handler multiple times if method is annotated with same annotation multiple times.
+     * Iterate over all instance methods annotated with specified annotation.
+     * <p>Handler will be invoked multiple times if method is annotated with same annotation multiple times.</p>
      *
      * @param clazz          class to find
      * @param annotationType annotation to find

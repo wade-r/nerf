@@ -8,9 +8,12 @@ import org.eclipse.jetty.http.HttpMethod;
 import java.util.HashMap;
 
 /**
- * Controller interface
- * Something can storage and fetch request response
- * Created by ryan on 5/27/17.
+ * This interface is for abstracting a web controller.
+ * <p><b>Most people may want to subclass {@link BaseController}, rather than implement this interface.</b></p>
+ * <p>This interface provides many handy methods</p>
+ *
+ * @author Ryan Wade
+ * @see BaseController
  */
 public interface Controller {
 
@@ -57,7 +60,7 @@ public interface Controller {
     WebContext context();
 
     /**
-     * will be invoked before action
+     * This will be invoked before action
      */
     void beforeAction();
 

@@ -2,7 +2,6 @@ package com.ireul.nerf.application;
 
 import com.ireul.nerf.command.Command;
 import com.ireul.nerf.command.Handle;
-import com.ireul.nerf.inject.Injector;
 import com.ireul.nerf.utils.AnnotationUtils;
 import com.ireul.nerf.web.WebContext;
 
@@ -11,47 +10,61 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 /**
- * Created by ryan on 5/27/17.
+ * This is a handy implementation of {@link Application}
+ * <p>Most people may want to subclass this class, rather than implement {@link Application}</p>
+ *
+ * @author Ryan Wade
  */
-public class BaseApplication implements Application, Injector {
+public class BaseApplication implements Application {
 
+    /**
+     * context of web service
+     */
     private WebContext webContext;
 
-    /*******************************************************************************************************************
-     * Life Cycle
-     ******************************************************************************************************************/
-
+    /**
+     * default {@link Application#boot()} implementation does nothing
+     */
+    @Override
     public void boot() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
+    /**
+     * default {@link Application#shutdown()} implementation stop the {@link WebContext} if exists
+     */
+    @Override
     public void shutdown() {
+        // stop the WebContext if not null
         if (this.webContext != null)
             this.webContext.stop();
     }
 
     /**
-     * Handle Command by searching Handle annotated method
+     * Handle {@link Command}s by searching methods annotated with {@link Handle}
      *
      * @param command the command to handle
      */
     public void execute(Command command) {
         AnnotationUtils.forEachInstanceMethod(this.getClass(), Handle.class, (method, handle) -> {
+            // match command name
             if (Arrays.stream(handle.value()).noneMatch(command.name::equalsIgnoreCase)) {
                 return;
             }
             try {
+                // invoke
                 method.invoke(this, command);
             } catch (IllegalAccessException | InvocationTargetException e1) {
                 e1.printStackTrace();
+                System.exit(1);
             }
         });
     }
 
-    /*******************************************************************************************************************
-     * Command
-     ******************************************************************************************************************/
-
+    /**
+     * Built-in {@link Handle} for "help" command, print all available commands and descriptions
+     *
+     * @param command the "help" {@link Command}
+     */
     @Handle(value = Command.DEFAULT_NAME, desc = "print help")
     public void handleHelp(Command command) {
         PrintStream o = System.out;
@@ -67,10 +80,18 @@ public class BaseApplication implements Application, Injector {
         });
     }
 
+    /**
+     * Built-in {@link Handle} for "web" command, run the web service
+     *
+     * @param command the "web" {@link Command}
+     */
     @Handle(value = "web", desc = "start web server")
     public void handleWeb(Command command) {
+        // initialize webContext
         this.webContext = new WebContext(this);
+        // setup
         this.webContext.setup(command.options);
+        // start
         this.webContext.start();
     }
 

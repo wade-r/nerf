@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ryanw on 2017/5/31.
+ * This helper class provides various routing related methods
+ *
+ * @author Ryan Wade
  */
 public class RouteUtils {
 
     /**
-     * Scan all implementation of Controller in given package, and get all methods annotated with @Action
+     * Scan all implementation of {@link Controller} in given package, and get all methods annotated with {@link Action}
      *
      * @param basePackage base package to search
      * @return list of routes
@@ -40,7 +42,7 @@ public class RouteUtils {
      *
      * @param pattern pattern to match
      * @param path    path to match
-     * @param output  the output {@link RouteResult}
+     * @param output  the output
      */
     public static boolean matchPath(String pattern, String path, RouteResult output) {
         if (pattern == null || path == null) {
@@ -78,6 +80,7 @@ public class RouteUtils {
      * @param mime       mime Action provides
      * @return matching result, larger is better
      */
+    // TODO: 2017/6/1 Refine
     public static float matchMime(String acceptMime, String mime) {
         if (acceptMime == null || mime == null) return 0;
 

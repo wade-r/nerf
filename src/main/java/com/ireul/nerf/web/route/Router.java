@@ -3,8 +3,9 @@ package com.ireul.nerf.web.route;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Router is abstraction of Nerf routing system
- * Created by ryanw on 2017/5/31.
+ * This interface abstracts routing system
+ *
+ * @author Ryan Wade
  */
 public interface Router {
 

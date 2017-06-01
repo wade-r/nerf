@@ -22,8 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * WebContext provides everything for a Jetty Embedded Server
- * Created by ryan on 6/1/17.
+ * This class provides a bridge from Nerf application to Jetty framework
+ *
+ * @author Ryan Wade
  */
 public class WebContext {
 
@@ -37,21 +38,34 @@ public class WebContext {
 
     private Renderer renderer;
 
+    /**
+     * Initialize from {@link Application}
+     *
+     * @param application application
+     */
     public WebContext(Application application) {
         this.application = application;
     }
 
+    /**
+     * Setup with options from command-line
+     *
+     * @param options options from command-line
+     */
     public void setup(HashMap<String, String> options) {
         String bind = options.get("bind");
         if (bind == null) {
             bind = "127.0.0.1:7788";
         }
         List<Route> routes = RouteUtils.scanClass(applicationClass());
-        this.router = new SimpleRouter(routes, application());
+        this.router = new SimpleRouter(routes);
         this.server = new JettyServer(bind, new JettyHandler());
         this.renderer = new FreeMarkerRenderer(applicationClass());
     }
 
+    /**
+     * Start the internal Jetty server
+     */
     public void start() {
         try {
             this.server.start();
@@ -61,6 +75,9 @@ public class WebContext {
         }
     }
 
+    /**
+     * Stop the internal Jetty server
+     */
     public void stop() {
         if (this.server == null) return;
         try {
@@ -72,25 +89,48 @@ public class WebContext {
         }
     }
 
+    /**
+     * Get the {@link Application}
+     *
+     * @return application instance
+     */
     public Application application() {
         return this.application;
     }
 
+    /**
+     * Get the application class
+     *
+     * @return application class
+     */
     public Class<? extends Application> applicationClass() {
         return application().getClass();
     }
 
+    /**
+     * Get the server
+     *
+     * @return the server
+     */
     public JettyServer server() {
         return this.server;
     }
 
+    /**
+     * Render the template
+     *
+     * @param template template id
+     * @param model    model
+     * @param output   output
+     */
     public void render(String template, HashMap<String, Object> model, PrintWriter output) {
         this.renderer.render(template, model, output);
     }
 
     /**
      * JettyHandler inherit Jetty {@link SessionHandler}, provides a bridge from Nerf to Jetty
-     * Created by ryan on 5/31/17.
+     *
+     * @author Ryan Wade
      */
     public class JettyHandler extends SessionHandler {
 

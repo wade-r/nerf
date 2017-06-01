@@ -5,9 +5,11 @@ import com.ireul.nerf.web.server.Request;
 import com.ireul.nerf.web.server.Response;
 
 /**
- * Basic implementation of Controller
- * Just storage request, response for later fetch
- * Created by ryan on 5/30/17.
+ * This is a handy implementation of {@link Controller}, basically provides storage fields and getter-setters.
+ * <p>Most people should subclass this class, rather than implement {@link Controller}</p>
+ *
+ * @author Ryan Wade
+ * @see Controller
  */
 public class BaseController implements Controller {
 
@@ -47,6 +49,9 @@ public class BaseController implements Controller {
         return this.context;
     }
 
+    /**
+     * default implementation of {@link #beforeAction()} sets the "Server" header to "Nerf"
+     */
     @Override
     public void beforeAction() {
         header("Server", "Nerf");

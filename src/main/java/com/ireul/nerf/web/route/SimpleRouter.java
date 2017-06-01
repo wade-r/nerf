@@ -1,7 +1,5 @@
 package com.ireul.nerf.web.route;
 
-import com.ireul.nerf.inject.Injector;
-
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.ArrayList;
@@ -9,18 +7,16 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * SimpleRouter implements Router, search list of Route, execute first matches
- * Created by ryan on 5/31/17.
+ * This class provides basic implementation of {@link Router}, iterate all {@link #routes} and returns first match
+ *
+ * @author Ryan Wade
  */
 public class SimpleRouter implements Router {
 
     private ArrayList<Route> routes;
 
-    private Injector injector;
-
-    public SimpleRouter(Collection<Route> routes, Injector injector) {
+    public SimpleRouter(Collection<Route> routes) {
         this.routes = new ArrayList<>(routes);
-        this.injector = injector;
     }
 
     private boolean matchRoute(Route route, HttpServletRequest request, RouteResult result) {

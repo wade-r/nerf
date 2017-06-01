@@ -5,8 +5,11 @@ import com.ireul.nerf.web.controller.Controller;
 import java.lang.reflect.Method;
 
 /**
- * Route is composed with matching rules and a target class and a target {@link Method}
- * Created by ryan on 5/31/17.
+ * This class represents a rule of routing and how to execute corresponding controller method
+ *
+ * @author Ryan Wade
+ * @see Action
+ * @see Controller
  */
 public class Route {
 
@@ -28,6 +31,13 @@ public class Route {
         return this.method;
     }
 
+    /**
+     * Initialize a {@link Route}
+     *
+     * @param controllerClass the controller class, commonly subclass of {@link com.ireul.nerf.web.controller.BaseController}
+     * @param method          the instance method to invoke
+     * @param action          the {@link Action} to route
+     */
     public Route(Class<? extends Controller> controllerClass, Method method, Action action) {
         this.action = action;
         this.controllerClass = controllerClass;

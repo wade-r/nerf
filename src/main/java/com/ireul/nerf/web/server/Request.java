@@ -6,13 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 /**
- * Request wraps a {@link HttpServletRequest}
- * <p>
- * Created by ryan on 5/31/17.
+ * This class wraps a {@link HttpServletRequest}, providing many helper methods
+ *
+ * @author Ryan Wade
  */
 public class Request {
 
-    public static final String NAMED_PATHS = "com.ireul.nerf.NamedPaths";
+    private static final String NAMED_PATHS = "com.ireul.nerf.NamedPaths";
 
     private final HttpServletRequest request;
 
@@ -25,10 +25,20 @@ public class Request {
         this.request = request;
     }
 
+    /**
+     * Set named paths
+     *
+     * @param namedPaths named paths HashMap to set
+     */
     public void namedPaths(HashMap<String, String> namedPaths) {
         this.request.setAttribute(NAMED_PATHS, namedPaths);
     }
 
+    /**
+     * Get all named paths
+     *
+     * @return all named paths
+     */
     @SuppressWarnings("unchecked")
     public HashMap<String, String> namedPaths() {
         HashMap<String, String> namedPaths = (HashMap<String, String>) this.request.getAttribute(NAMED_PATHS);
@@ -39,18 +49,39 @@ public class Request {
         return namedPaths;
     }
 
+    /**
+     * Get named path by name
+     *
+     * @param name name of named path
+     * @return value of named path
+     */
     public String namedPath(String name) {
         return namedPaths().get(name);
     }
 
+    /**
+     * Get the internal {@link HttpServletRequest}
+     *
+     * @return servlet request
+     */
     public HttpServletRequest raw() {
         return this.request;
     }
 
+    /**
+     * Get the http method
+     *
+     * @return http method
+     */
     public HttpMethod method() {
         return HttpMethod.fromString(raw().getMethod());
     }
 
+    /**
+     * Get the query string
+     *
+     * @return query string
+     */
     public String queryString() {
         return raw().getQueryString();
     }

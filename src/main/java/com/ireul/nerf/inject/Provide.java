@@ -6,8 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Provide marks a field or a method can be used as injection source
- * Created by ryan on 5/27/17.
+ * This annotation marks a field or a method as a injection source
+ * <p>If a method is marked by {@link Inject}, it MUST NOT have parameters and MUST return a object. Marked method will
+ * be invoked every time a field be injected.</p>
+ *
+ * @author Ryan Wade
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
