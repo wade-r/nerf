@@ -6,7 +6,7 @@
 
     <groupId>com.ireul.nerf</groupId>
     <artifactId>nerf</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.20170602-SNAPSHOT</version>
 
     <name>nerf</name>
     <description>Another light-weight Java web framework</description>
