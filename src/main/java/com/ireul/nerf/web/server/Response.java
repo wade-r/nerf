@@ -81,8 +81,7 @@ public class Response {
         try {
             writer = raw().getWriter();
         } catch (IOException e) {
-            e.printStackTrace();
-            return;
+            throw new RuntimeException(e);
         }
         writer.write(string);
         writer.close();
@@ -98,8 +97,7 @@ public class Response {
         try {
             writer = raw().getWriter();
         } catch (IOException e) {
-            e.printStackTrace();
-            return;
+            throw new RuntimeException(e);
         }
         writer.write(chars);
         writer.close();

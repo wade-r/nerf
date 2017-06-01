@@ -16,6 +16,6 @@ public interface Router {
      * @param response servlet response
      * @return if route rule found and properly handled
      */
-    boolean route(HttpServletRequest request, HttpServletResponse response);
+    boolean route(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }

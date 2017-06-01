@@ -8,6 +8,7 @@ import com.ireul.nerf.web.route.SimpleRouter;
 import com.ireul.nerf.web.server.JettyHandler;
 import com.ireul.nerf.web.server.JettyServer;
 
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
@@ -47,11 +48,22 @@ public class BaseApplication implements Application, Injector {
      * Command
      ******************************************************************************************************************/
 
-    @Handle(Command.DEFAULT_NAME)
+    @Handle(value = Command.DEFAULT_NAME, desc = "print help")
     public void handleHelp(Command command) {
+        PrintStream o = System.out;
+        o.println();
+        o.println("Welcome to Nerf Web Framework");
+        o.println();
+        o.println("available commands:");
+        o.println();
+        AnnotationUtils.forEachInstanceMethod(this.getClass(), Handle.class, (method, handle) -> {
+            for (String name : handle.value()) {
+                o.println("  " + name + " - " + handle.desc());
+            }
+        });
     }
 
-    @Handle("web")
+    @Handle(value = "web", desc = "start web server")
     public void handleWeb(Command command) {
         String bind = command.options.get("bind");
         if (bind == null) {

@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Provide marks a field or a method can be used as injection source
  * Created by ryan on 5/27/17.
  */
 @Target({ElementType.FIELD, ElementType.METHOD})

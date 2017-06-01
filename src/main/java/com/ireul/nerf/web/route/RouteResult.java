@@ -3,15 +3,16 @@ package com.ireul.nerf.web.route;
 import java.util.HashMap;
 
 /**
+ * Route rule evaluation result
  * Created by ryanw on 2017/5/31.
  */
-public class RouteMatch {
+public class RouteResult {
 
     private boolean matched = false;
 
     private HashMap<String, String> namedPaths = null;
 
-    public RouteMatch matched(boolean matched) {
+    public RouteResult matched(boolean matched) {
         this.matched = matched;
         return this;
     }

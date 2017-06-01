@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
- * Injector is a virtual interface, it read own fields and methods and
+ * Injector is a virtual interface, it read own fields and methods and can inject to another object
  * Created by ryan on 5/27/17.
  */
 public interface Injector {

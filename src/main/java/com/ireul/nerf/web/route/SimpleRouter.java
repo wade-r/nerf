@@ -8,7 +8,6 @@ import com.ireul.nerf.web.server.Response;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +32,7 @@ public class SimpleRouter implements Router {
         return new SimpleRouter(RouteUtils.scanRoutes(application.getClass().getPackage().getName()), application);
     }
 
-    private void matchRoute(Route route, HttpServletRequest request, RouteMatch output) {
+    private void matchRoute(Route route, HttpServletRequest request, RouteResult output) {
         // check method
         if (Arrays.stream(route.action().method()).noneMatch(m -> m.is(request.getMethod()))) {
             output.matched(false);
@@ -46,33 +45,29 @@ public class SimpleRouter implements Router {
     }
 
     @Override
-    public boolean route(HttpServletRequest request, HttpServletResponse response) {
+    public boolean route(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // match is shared, preventing massive allocation
-        RouteMatch match = new RouteMatch();
+        RouteResult match = new RouteResult();
         for (Route route : this.routes) {
             matchRoute(route, request, match);
             if (match.matched()) {
-                try {
-                    // create wrapped request and set namedPaths
-                    Request wrappedRequest = new Request(request);
-                    wrappedRequest.namedPaths(match.namedPaths());
-                    // create wrapped response
-                    Response wrappedResponse = new Response(response);
-                    // initialize a controller
-                    Controller controller = route.controllerClass().newInstance();
-                    // inject fields
-                    this.injector.injectTo(controller);
-                    // set request/response
-                    controller.request(wrappedRequest);
-                    controller.response(wrappedResponse);
-                    // invoke beforeAction
-                    controller.beforeAction();
-                    // invoke method
-                    route.method().invoke(controller);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                    return false;
-                }
+                // create wrapped request and set namedPaths
+                Request wrappedRequest = new Request(request);
+                wrappedRequest.namedPaths(match.namedPaths());
+                // create wrapped response
+                Response wrappedResponse = new Response(response);
+                // initialize a controller
+                Controller controller = route.controllerClass().newInstance();
+                // inject fields
+                this.injector.injectTo(controller);
+                // set request/response
+                controller.request(wrappedRequest);
+                controller.response(wrappedResponse);
+                // invoke beforeAction
+                controller.beforeAction();
+                // invoke method
+                route.method().invoke(controller);
+                // return true
                 return true;
             }
         }

@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Inject marks a field is injectable
+ * Inject marks a field as injectable
  * Created by ryan on 5/27/17.
  */
 @Target(ElementType.FIELD)
