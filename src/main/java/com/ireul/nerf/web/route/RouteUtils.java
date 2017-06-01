@@ -18,7 +18,7 @@ public class RouteUtils {
      * @param basePackage base package to search
      * @return list of routes
      */
-    public static List<Route> scanRoutes(String basePackage) {
+    public static List<Route> scanPackage(String basePackage) {
         ArrayList<Route> routes = new ArrayList<>();
         Reflections reflections = new Reflections(basePackage);
         reflections.getSubTypesOf(Controller.class).forEach(controllerClass -> {
@@ -31,6 +31,10 @@ public class RouteUtils {
         return routes;
     }
 
+    public static List<Route> scanClass(Class<?> clazz) {
+        return scanPackage(clazz.getPackage().getName());
+    }
+
     /**
      * Match a path with pattern, ":name" are supported
      *
@@ -38,10 +42,9 @@ public class RouteUtils {
      * @param path    path to match
      * @param output  the output {@link RouteResult}
      */
-    public static void matchPath(String pattern, String path, RouteResult output) {
+    public static boolean matchPath(String pattern, String path, RouteResult output) {
         if (pattern == null || path == null) {
-            output.matched(false);
-            return;
+            return false;
         }
 
         String[] patterns = pattern.split("/");
@@ -49,8 +52,7 @@ public class RouteUtils {
 
         // length not equal, return directly
         if (patterns.length != paths.length) {
-            output.matched(false);
-            return;
+            return false;
         }
 
         for (int i = 0; i < patterns.length; i++) {
@@ -62,13 +64,11 @@ public class RouteUtils {
                 output.namedPaths().put(p.substring(1), a);
             } else if (!p.equals(a)) {
                 // not equal, clearNamedPaths and return
-                output.matched(false);
-                output.clearNamedPaths();
-                return;
+                return false;
             } // else, keep iterating
         }
 
-        output.matched(true);
+        return true;
     }
 
     /**

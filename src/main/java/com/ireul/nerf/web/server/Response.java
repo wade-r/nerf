@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 
 /**
  * Response wraps a {@link HttpServletResponse}
@@ -24,7 +25,9 @@ public class Response {
 
     public static final String APPLICATION_JSON = "application/json";
 
-    private final HttpServletResponse response;
+    private HttpServletResponse response;
+
+    private HashMap<String, Object> locals;
 
     public Response(HttpServletResponse response) {
         this.response = response;
@@ -72,17 +75,25 @@ public class Response {
     }
 
     /**
+     * Get the body writer
+     *
+     * @return body writer
+     */
+    public PrintWriter bodyWriter() {
+        try {
+            return raw().getWriter();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Write a string and close
      *
      * @param string string to write
      */
     public void body(String string) {
-        PrintWriter writer;
-        try {
-            writer = raw().getWriter();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        PrintWriter writer = bodyWriter();
         writer.write(string);
         writer.close();
     }
@@ -93,12 +104,7 @@ public class Response {
      * @param chars chars to write
      */
     public void body(char[] chars) {
-        PrintWriter writer;
-        try {
-            writer = raw().getWriter();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        PrintWriter writer = bodyWriter();
         writer.write(chars);
         writer.close();
     }
@@ -157,6 +163,22 @@ public class Response {
      */
     public void redirect(String location) {
         redirect(location, HttpServletResponse.SC_MOVED_TEMPORARILY);
+    }
+
+    public HashMap<String, Object> locals() {
+        if (this.locals == null) {
+            this.locals = new HashMap<>();
+        }
+        return this.locals;
+    }
+
+    public void local(String name, Object value) {
+        locals().put(name, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T local(String name) {
+        return (T) locals().get(name);
     }
 
 }

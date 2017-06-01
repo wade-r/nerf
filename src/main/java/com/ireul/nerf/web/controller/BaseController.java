@@ -1,5 +1,6 @@
 package com.ireul.nerf.web.controller;
 
+import com.ireul.nerf.web.WebContext;
 import com.ireul.nerf.web.server.Request;
 import com.ireul.nerf.web.server.Response;
 
@@ -13,6 +14,8 @@ public class BaseController implements Controller {
     private Response response;
 
     private Request request;
+
+    private WebContext context;
 
     @Override
     public Request request() {
@@ -32,6 +35,16 @@ public class BaseController implements Controller {
     @Override
     public void response(Response response) {
         this.response = response;
+    }
+
+    @Override
+    public void context(WebContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public WebContext context() {
+        return this.context;
     }
 
     @Override

@@ -10,11 +10,11 @@ import java.lang.reflect.Method;
  */
 public class Route {
 
-    private Action action;
+    private final Action action;
 
-    private Class<? extends Controller> controllerClass;
+    private final Class<? extends Controller> controllerClass;
 
-    private Method method;
+    private final Method method;
 
     public Action action() {
         return this.action;

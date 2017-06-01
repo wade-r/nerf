@@ -1,7 +1,6 @@
 package com.ireul.nerf.web.route;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Router is abstraction of Nerf routing system
@@ -10,12 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 public interface Router {
 
     /**
-     * Handles a Servlet Request/Response pair
+     * Search a Route by given request, wrapped in RouteResult with extra values
      *
-     * @param request  servlet request
-     * @param response servlet response
-     * @return if route rule found and properly handled
+     * @param request request to search
+     * @return RouteResult, route is null if not found
      */
-    boolean route(HttpServletRequest request, HttpServletResponse response) throws Exception;
+    RouteResult route(HttpServletRequest request);
 
 }

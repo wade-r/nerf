@@ -8,24 +8,23 @@ import java.util.HashMap;
  */
 public class RouteResult {
 
-    private boolean matched = false;
-
-    private HashMap<String, String> namedPaths = null;
-
-    public RouteResult matched(boolean matched) {
-        this.matched = matched;
-        return this;
-    }
-
-    public boolean matched() {
-        return this.matched;
-    }
-
-    public void clearNamedPaths() {
-        this.matched = false;
+    public void reset() {
+        this.route = null;
         if (this.namedPaths != null) {
             this.namedPaths.clear();
         }
+    }
+
+    private HashMap<String, String> namedPaths = null;
+
+    private Route route = null;
+
+    public Route route() {
+        return this.route;
+    }
+
+    public void route(Route route) {
+        this.route = route;
     }
 
     public HashMap<String, String> namedPaths() {
@@ -33,6 +32,10 @@ public class RouteResult {
             this.namedPaths = new HashMap<>();
         }
         return this.namedPaths;
+    }
+
+    public boolean hasNamedPaths() {
+        return this.namedPaths != null;
     }
 
 }

@@ -1,13 +1,8 @@
 package com.ireul.nerf.web.route;
 
-import com.ireul.nerf.application.Application;
 import com.ireul.nerf.inject.Injector;
-import com.ireul.nerf.web.controller.Controller;
-import com.ireul.nerf.web.server.Request;
-import com.ireul.nerf.web.server.Response;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,50 +23,28 @@ public class SimpleRouter implements Router {
         this.injector = injector;
     }
 
-    public static SimpleRouter scan(Application application) {
-        return new SimpleRouter(RouteUtils.scanRoutes(application.getClass().getPackage().getName()), application);
-    }
-
-    private void matchRoute(Route route, HttpServletRequest request, RouteResult output) {
+    private boolean matchRoute(Route route, HttpServletRequest request, RouteResult result) {
         // check method
         if (Arrays.stream(route.action().method()).noneMatch(m -> m.is(request.getMethod()))) {
-            output.matched(false);
-            return;
+            return false;
         }
 
         // check path
         URI uri = URI.create(request.getRequestURL().toString());
-        RouteUtils.matchPath(route.action().value(), uri.getPath(), output);
+        return RouteUtils.matchPath(route.action().value(), uri.getPath(), result);
     }
 
     @Override
-    public boolean route(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // match is shared, preventing massive allocation
-        RouteResult match = new RouteResult();
+    public RouteResult route(HttpServletRequest request) {
+        RouteResult result = new RouteResult();
         for (Route route : this.routes) {
-            matchRoute(route, request, match);
-            if (match.matched()) {
-                // create wrapped request and set namedPaths
-                Request wrappedRequest = new Request(request);
-                wrappedRequest.namedPaths(match.namedPaths());
-                // create wrapped response
-                Response wrappedResponse = new Response(response);
-                // initialize a controller
-                Controller controller = route.controllerClass().newInstance();
-                // inject fields
-                this.injector.injectTo(controller);
-                // set request/response
-                controller.request(wrappedRequest);
-                controller.response(wrappedResponse);
-                // invoke beforeAction
-                controller.beforeAction();
-                // invoke method
-                route.method().invoke(controller);
-                // return true
-                return true;
+            result.reset();
+            if (this.matchRoute(route, request, result)) {
+                result.route(route);
+                break;
             }
         }
-        return false;
+        return result;
     }
 
 }

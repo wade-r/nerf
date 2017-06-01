@@ -1,5 +1,6 @@
 package com.ireul.nerf.web.controller;
 
+import com.ireul.nerf.web.WebContext;
 import com.ireul.nerf.web.server.Request;
 import com.ireul.nerf.web.server.Response;
 import org.eclipse.jetty.http.HttpMethod;
@@ -40,6 +41,20 @@ public interface Controller {
      * @param response response
      */
     void response(Response response);
+
+    /**
+     * Set the {@link WebContext}
+     *
+     * @param context
+     */
+    void context(WebContext context);
+
+    /**
+     * Return the web context
+     *
+     * @return
+     */
+    WebContext context();
 
     /**
      * will be invoked before action
@@ -120,6 +135,27 @@ public interface Controller {
 
     default void redirect(String location) {
         response().redirect(location);
+    }
+
+    default HashMap<String, Object> locals() {
+        return response().locals();
+    }
+
+    default void local(String name, Object value) {
+        response().local(name, value);
+    }
+
+    default <T> T local(String name) {
+        return response().local(name);
+    }
+
+    default void renderHtml(String template) {
+        type("text/html");
+        render(template);
+    }
+
+    default void render(String template) {
+        context().render(template, response().locals(), response().bodyWriter());
     }
 
 }

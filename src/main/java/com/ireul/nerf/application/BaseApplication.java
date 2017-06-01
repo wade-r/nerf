@@ -4,9 +4,7 @@ import com.ireul.nerf.command.Command;
 import com.ireul.nerf.command.Handle;
 import com.ireul.nerf.inject.Injector;
 import com.ireul.nerf.utils.AnnotationUtils;
-import com.ireul.nerf.web.route.SimpleRouter;
-import com.ireul.nerf.web.server.JettyHandler;
-import com.ireul.nerf.web.server.JettyServer;
+import com.ireul.nerf.web.WebContext;
 
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -17,7 +15,7 @@ import java.util.Arrays;
  */
 public class BaseApplication implements Application, Injector {
 
-    private JettyServer server;
+    private WebContext webContext;
 
     /*******************************************************************************************************************
      * Life Cycle
@@ -65,18 +63,9 @@ public class BaseApplication implements Application, Injector {
 
     @Handle(value = "web", desc = "start web server")
     public void handleWeb(Command command) {
-        String bind = command.options.get("bind");
-        if (bind == null) {
-            bind = "127.0.0.1:7788";
-        }
-        SimpleRouter router = SimpleRouter.scan(this);
-        this.server = new JettyServer(bind, new JettyHandler(router));
-        try {
-            this.server.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(100);
-        }
+        this.webContext = new WebContext(this);
+        this.webContext.setup(command.options);
+        this.webContext.start();
     }
 
 }

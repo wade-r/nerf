@@ -1,5 +1,6 @@
 package com.ireul.nerf.web.server;
 
+import com.ireul.nerf.web.WebContext;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
@@ -16,13 +17,13 @@ public class JettyServer {
 
     private int bindPort;
 
-    private JettyHandler handler;
+    private WebContext.JettyHandler handler;
 
     private Server server;
 
     private final Logger logger = LoggerFactory.getLogger(JettyServer.class);
 
-    public JettyServer(String bindAddress, JettyHandler handler) {
+    public JettyServer(String bindAddress, WebContext.JettyHandler handler) {
         if (bindAddress == null || bindAddress.length() == 0) {
             this.bindHost = "0.0.0.0";
             this.bindPort = 8080;
