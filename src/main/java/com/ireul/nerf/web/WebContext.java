@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 
@@ -159,7 +160,9 @@ public class WebContext {
                     // invoke beforeAction
                     controller.beforeAction();
                     // invoke method
-                    route.method().invoke(controller);
+                    Method method = route.method();
+                    if (!method.isAccessible()) method.setAccessible(true);
+                    method.invoke(controller);
                     // mark handled
                     baseRequest.setHandled(true);
                 } else {
