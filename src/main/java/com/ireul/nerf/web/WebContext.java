@@ -151,12 +151,11 @@ public class WebContext {
                     Response wrappedResponse = new Response(response);
                     // initialize a controller
                     Controller controller = route.controllerClass().newInstance();
-                    // inject fields
+                    // inject fields, including context
                     application().injectTo(controller);
                     // set request/response/context
                     controller.request(wrappedRequest);
                     controller.response(wrappedResponse);
-                    controller.context(WebContext.this);
                     // invoke beforeAction
                     controller.beforeAction();
                     // invoke method

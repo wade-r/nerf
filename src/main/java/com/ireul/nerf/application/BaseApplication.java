@@ -3,8 +3,11 @@ package com.ireul.nerf.application;
 import com.ireul.nerf.command.Command;
 import com.ireul.nerf.command.CommandUtils;
 import com.ireul.nerf.command.Handle;
+import com.ireul.nerf.inject.Provide;
+import com.ireul.nerf.schedule.ScheduleContext;
 import com.ireul.nerf.utils.AnnotationUtils;
 import com.ireul.nerf.web.WebContext;
+import org.quartz.SchedulerException;
 
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +26,14 @@ public class BaseApplication implements Application {
     /**
      * context of web service
      */
+    @Provide
     private WebContext webContext;
+
+    /**
+     * context of schedule service
+     */
+    @Provide
+    private ScheduleContext scheduleContext;
 
     /**
      * default {@link Application#boot()} implementation does nothing
@@ -40,6 +50,9 @@ public class BaseApplication implements Application {
         // stop the WebContext if not null
         if (this.webContext != null)
             this.webContext.stop();
+        // stop the ScheduleContext if not null
+        if (this.scheduleContext != null)
+            this.scheduleContext.stop();
     }
 
     /**
@@ -91,7 +104,7 @@ public class BaseApplication implements Application {
                     CommandUtils
                             .findHandles(this.getClass(), name)
                             .forEach(h -> o.println(h.annotation.desc()));
-        });
+                });
     }
 
     /**
@@ -114,9 +127,14 @@ public class BaseApplication implements Application {
      *
      * @param command the "schedule" {@link Command}
      */
-    // TODO: 6/2/17 Implementation
-    @Handle(value = "schedule", desc = "start schedule runner")
-    public void handleSchedule(Command command) {
+    @Handle(value = "schedule", desc = "start schedule runner\n (optional)--quartz-config [FILE], Quartz properties file")
+    public void handleSchedule(Command command) throws SchedulerException {
+        // initialize scheduleContext
+        this.scheduleContext = new ScheduleContext(this);
+        // setup
+        this.scheduleContext.setup(command.options);
+        // start
+        this.scheduleContext.start();
     }
 
 }

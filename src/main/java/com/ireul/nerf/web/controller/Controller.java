@@ -46,13 +46,6 @@ public interface Controller {
     void response(Response response);
 
     /**
-     * Set the {@link WebContext}
-     *
-     * @param context current {@link WebContext}
-     */
-    void context(WebContext context);
-
-    /**
      * Return the web context
      *
      * @return current {@link WebContext}

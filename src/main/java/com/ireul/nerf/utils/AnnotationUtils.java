@@ -19,7 +19,7 @@ public class AnnotationUtils {
      *
      * @param clazz          class to search
      * @param annotationType annotation type
-     * @param <T>            annotationType
+     * @param <T>            annotation
      * @param <U>            class type
      * @return stream
      */
