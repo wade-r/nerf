@@ -3,7 +3,6 @@ package com.ireul.nerf.command;
 import com.ireul.nerf.utils.AnnotationUtils;
 import com.ireul.nerf.utils.MethodAndAnnotation;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -23,7 +22,7 @@ public class CommandUtils {
      * @param commandName command name
      * @return Stream of methods
      */
-    public static Stream<Method> findHandles(Class<?> clazz, String commandName) {
+    public static Stream<MethodAndAnnotation<Handle>> findHandles(Class<?> clazz, String commandName) {
         // create a priority queue for multiple methods invocation
         PriorityQueue<MethodAndAnnotation<Handle>> queue = new PriorityQueue<>(1, Comparator.comparingInt(m -> m.annotation.priority()));
         // append queue
@@ -31,7 +30,7 @@ public class CommandUtils {
                 .findInstanceMethods(clazz, Handle.class)
                 .filter(maa -> Arrays.stream(maa.annotation.value()).anyMatch(commandName::equalsIgnoreCase))
                 .forEach(queue::add);
-        return queue.stream().map(m -> m.method);
+        return queue.stream();
     }
 
 }

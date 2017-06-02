@@ -8,6 +8,9 @@ import com.ireul.nerf.web.WebContext;
 
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * This is a handy implementation of {@link Application}
@@ -45,7 +48,8 @@ public class BaseApplication implements Application {
      * @param command the command to handle
      */
     public void execute(Command command) {
-        CommandUtils.findHandles(this.getClass(), command.name).forEach(method -> {
+        CommandUtils.findHandles(this.getClass(), command.name).forEach(maa -> {
+            Method method = maa.method;
             // set accessible to true
             if (!method.isAccessible()) method.setAccessible(true);
             try {
@@ -70,18 +74,23 @@ public class BaseApplication implements Application {
     @Handle(value = Command.DEFAULT_NAME, desc = "print help")
     public void handleHelp(Command command) {
         PrintStream o = System.out;
+
         o.println();
         o.println("Welcome to Nerf Web Framework");
         o.println();
         o.println("available commands:");
-        o.println();
-        AnnotationUtils.findInstanceMethods(this.getClass(), Handle.class).forEach(maa -> {
-            Handle handle = maa.annotation;
-            for (String name : handle.value()) {
-                if (handle.desc().length() > 0) {
-                    o.println("  " + name + " - " + handle.desc());
-                }
-            }
+
+        AnnotationUtils
+                .findInstanceMethods(this.getClass(), Handle.class)
+                .flatMap(maa -> Arrays.stream(maa.annotation.value()))
+                .collect(Collectors.toSet())
+                .forEach(name -> {
+                    o.println();
+                    o.println("[" + name + "]");
+                    o.println();
+                    CommandUtils
+                            .findHandles(this.getClass(), name)
+                            .forEach(h -> o.println(h.annotation.desc()));
         });
     }
 
@@ -90,7 +99,7 @@ public class BaseApplication implements Application {
      *
      * @param command the "web" {@link Command}
      */
-    @Handle(value = "web", desc = "start web server")
+    @Handle(value = "web", desc = "start web server\n  --bind HTTP bind address")
     public void handleWeb(Command command) {
         // initialize webContext
         this.webContext = new WebContext(this);
@@ -98,6 +107,16 @@ public class BaseApplication implements Application {
         this.webContext.setup(command.options);
         // start
         this.webContext.start();
+    }
+
+    /**
+     * Built-in {@link Handle} for "schedule" command, run the internal scheduler runner
+     *
+     * @param command the "schedule" {@link Command}
+     */
+    // TODO: 6/2/17 Implementation
+    @Handle(value = "schedule", desc = "start schedule runner")
+    public void handleSchedule(Command command) {
     }
 
 }
