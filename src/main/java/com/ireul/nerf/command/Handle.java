@@ -1,9 +1,6 @@
 package com.ireul.nerf.command;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * This annotation is for marking a command entry on application class
@@ -14,6 +11,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+@Repeatable(Handles.class)
 public @interface Handle {
     /**
      * Command names can be handled by this method
@@ -28,4 +26,11 @@ public @interface Handle {
      * @return description
      */
     String desc() default "";
+
+    /**
+     * Priority of this method, lesser will be execute earlier, default is 0
+     *
+     * @return priority of this method
+     */
+    int priority() default 0;
 }

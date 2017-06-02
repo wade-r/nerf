@@ -64,50 +64,122 @@ public interface Controller {
      */
     void beforeAction();
 
+    /**
+     * Get request http method
+     *
+     * @return request http method
+     * @see Request#method()
+     */
     default HttpMethod method() {
         return request().method();
     }
 
+    /**
+     * Check request method
+     *
+     * @return request is a GET request
+     * @see Request#method()
+     */
     default boolean isGet() {
         return HttpMethod.GET == method();
     }
 
+    /**
+     * Check request method
+     *
+     * @return request is a POST request
+     * @see Request#method()
+     */
     default boolean isPost() {
         return HttpMethod.POST == method();
     }
 
+    /**
+     * Check request method
+     *
+     * @return request is a DELETE request
+     * @see Request#method()
+     */
     default boolean isDelete() {
         return HttpMethod.DELETE == method();
     }
 
+    /**
+     * Check request method
+     *
+     * @return request is a PUT request
+     * @see Request#method()
+     */
     default boolean isPut() {
         return HttpMethod.PUT == method();
     }
 
+    /**
+     * Get request query string
+     *
+     * @return query string
+     * @see Request#queryString()
+     */
     default String queryString() {
         return request().queryString();
     }
 
+    /**
+     * Get named paths
+     *
+     * @return named paths
+     * @see Request#namedPaths()
+     */
     default HashMap<String, String> namedPaths() {
         return request().namedPaths();
     }
 
+    /**
+     * Get named path by name
+     *
+     * @param name name
+     * @return value of named path
+     * @see Request#namedPaths()
+     */
     default String namedPath(String name) {
         return request().namedPath(name);
     }
 
+    /**
+     * Set response header
+     *
+     * @param name  header name
+     * @param value header value
+     * @see Response#header(String, String)
+     */
     default void header(String name, String value) {
         response().header(name, value);
     }
 
+    /**
+     * Set response status
+     *
+     * @param status status code
+     * @see Response#status(int)
+     */
     default void status(int status) {
         response().status(status);
     }
 
+    /**
+     * Set response content type
+     *
+     * @param type content type
+     */
     default void type(String type) {
         response().type(type);
     }
 
+    /**
+     * Set response content length
+     *
+     * @param length content length
+     */
     default void length(long length) {
         response().length(length);
     }

@@ -3,6 +3,7 @@ package com.ireul.nerf.utils;
 import org.junit.Test;
 
 import java.lang.annotation.*;
+import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertTrue;
 
@@ -46,7 +47,9 @@ public class AnnotationUtilsTest {
         final int[] counter = {0};
         final int[] method1Counter = {0};
         final int[] method2Counter = {0};
-        AnnotationUtils.forEachInstanceMethod(TargetClass.class, TargetAnnotation.class, (m, a) -> {
+        AnnotationUtils.findInstanceMethods(TargetClass.class, TargetAnnotation.class).forEach(maa ->{
+            Method m = maa.method;
+            TargetAnnotation a = maa.annotation;
             counter[0]++;
             if (m.getName().equalsIgnoreCase("targetMethod1")) {
                 method1Counter[0]++;

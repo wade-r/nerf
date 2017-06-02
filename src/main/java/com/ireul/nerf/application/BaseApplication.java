@@ -1,13 +1,13 @@
 package com.ireul.nerf.application;
 
 import com.ireul.nerf.command.Command;
+import com.ireul.nerf.command.CommandUtils;
 import com.ireul.nerf.command.Handle;
 import com.ireul.nerf.utils.AnnotationUtils;
 import com.ireul.nerf.web.WebContext;
 
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 /**
  * This is a handy implementation of {@link Application}
@@ -45,14 +45,16 @@ public class BaseApplication implements Application {
      * @param command the command to handle
      */
     public void execute(Command command) {
-        AnnotationUtils.forEachInstanceMethod(this.getClass(), Handle.class, (method, handle) -> {
-            // match command name
-            if (Arrays.stream(handle.value()).noneMatch(command.name::equalsIgnoreCase)) {
-                return;
-            }
+        CommandUtils.findHandles(this.getClass(), command.name).forEach(method -> {
+            // set accessible to true
+            if (!method.isAccessible()) method.setAccessible(true);
             try {
                 // invoke
-                method.invoke(this, command);
+                if (method.getParameterCount() == 1) {
+                    method.invoke(this, command);
+                } else {
+                    method.invoke(this);
+                }
             } catch (IllegalAccessException | InvocationTargetException e1) {
                 e1.printStackTrace();
                 System.exit(1);
@@ -73,9 +75,12 @@ public class BaseApplication implements Application {
         o.println();
         o.println("available commands:");
         o.println();
-        AnnotationUtils.forEachInstanceMethod(this.getClass(), Handle.class, (method, handle) -> {
+        AnnotationUtils.findInstanceMethods(this.getClass(), Handle.class).forEach(maa -> {
+            Handle handle = maa.annotation;
             for (String name : handle.value()) {
-                o.println("  " + name + " - " + handle.desc());
+                if (handle.desc().length() > 0) {
+                    o.println("  " + name + " - " + handle.desc());
+                }
             }
         });
     }

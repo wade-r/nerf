@@ -24,11 +24,9 @@ public class RouteUtils {
         ArrayList<Route> routes = new ArrayList<>();
         Reflections reflections = new Reflections(basePackage);
         reflections.getSubTypesOf(Controller.class).forEach(controllerClass -> {
-            AnnotationUtils.forEachInstanceMethod(
-                    controllerClass,
-                    Action.class,
-                    (method, action) -> routes.add(new Route(controllerClass, method, action))
-            );
+            AnnotationUtils.findInstanceMethods(controllerClass, Action.class)
+                    .map(maa -> new Route(controllerClass, maa.method, maa.annotation))
+                    .forEach(routes::add);
         });
         return routes;
     }
