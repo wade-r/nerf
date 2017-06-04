@@ -4,8 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * This annotation represents a Quartz Trigger configuration
- * <p>
- * <b>cron() and interval() should pick one</b>
+ * <b>ONE and ONLY ONE of cron() or interval() should be used</b>
  *
  * @author Ryan Wade
  */

@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public class ScheduleUtils {
 
     /**
-     * Scan a package, returns a stream of all {@link Job} Class / {@link Schedule} pair
+     * Scan a package, returns a stream of all {@link org.quartz.Job} Class / {@link Schedule} pair
      *
      * @param basePackage package to scan
      * @return stream

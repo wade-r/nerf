@@ -1,10 +1,7 @@
 package com.ireul.nerf.schedule;
 
 import com.ireul.nerf.application.Application;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.*;
 import org.quartz.impl.DirectSchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
@@ -18,9 +15,14 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
+ * Provides {@link org.quartz} wrappers
+ * <p><b>Most people may subclass {@link BaseJob} rather than implements {@link Job}</b></p>
+ *
  * @author Ryan Wade
  */
 public class ScheduleContext {
+
+    public static final String INJECTOR_KEY = "com.ireul.nerf.Injector";
 
     private final Logger logger = LoggerFactory.getLogger(ScheduleContext.class);
 
@@ -51,6 +53,13 @@ public class ScheduleContext {
                 System.exit(1);
             }
         }
+        // add InjectionListener
+        try {
+            this.scheduler.getListenerManager().addJobListener(new InjectionListener());
+        } catch (SchedulerException e) {
+            logger.error("Cannot add InjectionListener to scheduler");
+            System.exit(1);
+        }
         // scan and schedule
         ScheduleUtils.findJobs(this.application.getClass()).forEach(caa -> {
             Schedule a = caa.annotation;
@@ -60,6 +69,9 @@ public class ScheduleContext {
                     .build();
             Trigger trigger = null;
             if (a.interval() > 0) {
+                if (a.cron().length() > 0) {
+                    logger.error("Both interval() and cron() found from @Schedule on class " + caa.classType.getName());
+                }
                 trigger = newTrigger()
                         .startNow()
                         .withSchedule(simpleSchedule().withIntervalInSeconds((int) a.interval()).repeatForever())
@@ -99,6 +111,31 @@ public class ScheduleContext {
                 e.printStackTrace();
                 System.exit(1);
             }
+        }
+    }
+
+    public Application application() {
+        return this.application;
+    }
+
+    private class InjectionListener implements JobListener {
+
+        @Override
+        public String getName() {
+            return "InjectionListener";
+        }
+
+        @Override
+        public void jobToBeExecuted(JobExecutionContext context) {
+            context.put(INJECTOR_KEY, application());
+        }
+
+        @Override
+        public void jobExecutionVetoed(JobExecutionContext context) {
+        }
+
+        @Override
+        public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
         }
     }
 
