@@ -7,7 +7,6 @@ import com.ireul.nerf.inject.Provide;
 import com.ireul.nerf.schedule.ScheduleContext;
 import com.ireul.nerf.utils.AnnotationUtils;
 import com.ireul.nerf.web.WebContext;
-import org.quartz.SchedulerException;
 
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -128,7 +127,7 @@ public class BaseApplication implements Application {
      * @param command the "schedule" {@link Command}
      */
     @Handle(value = "schedule", desc = "start schedule runner\n (optional)--quartz-config [FILE], Quartz properties file")
-    public void handleSchedule(Command command) throws SchedulerException {
+    public void handleSchedule(Command command) {
         // initialize scheduleContext
         this.scheduleContext = new ScheduleContext(this);
         // setup

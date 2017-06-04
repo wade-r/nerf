@@ -33,7 +33,7 @@ public abstract class BaseJob implements Job {
     /**
      * Subclasses should implement this method, JobExecutionContext is already set and injections are done
      *
-     * @throws JobExecutionException
+     * @throws JobExecutionException job execution exception from {@link org.quartz}
      */
     public abstract void execute() throws JobExecutionException;
 

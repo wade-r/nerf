@@ -49,6 +49,8 @@ public @interface Schedule {
 
     /**
      * Cron expression
+     *
+     * @return cron expression
      */
     String cron() default "";
 }
