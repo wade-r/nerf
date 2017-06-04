@@ -89,7 +89,7 @@ public class BaseApplication implements Application {
         PrintStream o = System.out;
 
         o.println();
-        o.println("Welcome to Nerf Web Framework");
+        o.println("Welcome to Nerf Web Framework [" + this.getClass().getCanonicalName() + "]");
         o.println();
         o.println("available commands:");
 
@@ -112,7 +112,7 @@ public class BaseApplication implements Application {
      *
      * @param command the "web" {@link Command}
      */
-    @Handle(value = "web", desc = "start web server\n  --bind HTTP bind address")
+    @Handle(value = "web", desc = "start web server\n  --bind, HTTP bind address, default \"127.0.0.1:7788\"")
     public void handleWeb(Command command) {
         // initialize webContext
         this.webContext = new WebContext(this);
