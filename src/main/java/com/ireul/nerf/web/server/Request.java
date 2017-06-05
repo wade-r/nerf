@@ -1,9 +1,14 @@
 package com.ireul.nerf.web.server;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.http.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class wraps a {@link HttpServletRequest}, providing many helper methods
@@ -84,6 +89,73 @@ public class Request {
      */
     public String queryString() {
         return raw().getQueryString();
+    }
+
+    /**
+     * Get parameter by name
+     *
+     * @param name name of parameter
+     * @return parameter value
+     */
+    public String param(String name) {
+        return raw().getParameter(name);
+    }
+
+    /**
+     * Get parameter map
+     *
+     * @return parameter map
+     */
+    public Map<String, String[]> params() {
+        return raw().getParameterMap();
+    }
+
+    /**
+     * Get the {@link BufferedReader} of request body
+     *
+     * @return request body reader
+     */
+    public BufferedReader body() {
+        try {
+            return raw().getReader();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get the request body as string
+     *
+     * @return request body
+     */
+    public String bodyString() {
+        try {
+            return IOUtils.toString(body());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Set encoding of request
+     *
+     * @param encoding encoding
+     */
+    public void encoding(String encoding) {
+        try {
+            raw().setCharacterEncoding(encoding);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get encoding of request
+     *
+     * @return encoding of request
+     */
+    public String encoding() {
+        return raw().getCharacterEncoding();
     }
 
 }

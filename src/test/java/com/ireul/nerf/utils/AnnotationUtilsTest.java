@@ -47,7 +47,7 @@ public class AnnotationUtilsTest {
         final int[] counter = {0};
         final int[] method1Counter = {0};
         final int[] method2Counter = {0};
-        AnnotationUtils.findInstanceMethods(TargetClass.class, TargetAnnotation.class).forEach(maa ->{
+        AnnotationUtils.findInstanceMethods(TargetClass.class, TargetAnnotation.class).forEach(maa -> {
             Method m = maa.method;
             TargetAnnotation a = maa.annotation;
             counter[0]++;

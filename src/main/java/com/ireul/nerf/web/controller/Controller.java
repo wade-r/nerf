@@ -6,6 +6,7 @@ import com.ireul.nerf.web.server.Response;
 import org.eclipse.jetty.http.HttpMethod;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This interface is for abstracting a web controller.
@@ -115,6 +116,25 @@ public interface Controller {
      */
     default String queryString() {
         return request().queryString();
+    }
+
+    /**
+     * Get parameter by name
+     *
+     * @param name name of parameter
+     * @return parameter value
+     */
+    default String param(String name) {
+        return request().param(name);
+    }
+
+    /**
+     * Get all parameters
+     *
+     * @return parameters as Map
+     */
+    default Map<String, String[]> params() {
+        return request().params();
     }
 
     /**

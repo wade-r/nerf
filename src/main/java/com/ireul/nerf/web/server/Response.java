@@ -210,4 +210,13 @@ public class Response {
         return (T) locals().get(name);
     }
 
+    /**
+     * Set encoding of request
+     *
+     * @param encoding encoding
+     */
+    public void encoding(String encoding) {
+        raw().setCharacterEncoding(encoding);
+    }
+
 }
