@@ -7,6 +7,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
@@ -65,6 +66,7 @@ public class ScheduleContext {
             Schedule a = caa.annotation;
             JobDetail job = newJob(caa.classType)
                     .requestRecovery(a.recovery())
+                    .withDescription(a.desc())
                     .withIdentity(a.name(), a.group())
                     .build();
             Trigger trigger = null;
@@ -73,7 +75,7 @@ public class ScheduleContext {
                     logger.error("Both interval() and cron() found from @Schedule on class " + caa.classType.getName());
                 }
                 trigger = newTrigger()
-                        .startNow()
+                        .startAt(new Date(System.currentTimeMillis() + a.delay() * 1000))
                         .withSchedule(simpleSchedule().withIntervalInSeconds((int) a.interval()).repeatForever())
                         .build();
             } else if (a.cron().length() > 0) {

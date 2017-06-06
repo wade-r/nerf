@@ -48,6 +48,13 @@ public @interface Schedule {
     long interval() default 0;
 
     /**
+     * Delay before first start by interval()
+     *
+     * @return delay in seconds
+     */
+    long delay() default 0;
+
+    /**
      * Cron expression
      *
      * @return cron expression
