@@ -1,5 +1,8 @@
 package com.ireul.nerf.schedule;
 
+import org.quartz.JobBuilder;
+import org.quartz.utils.Key;
+
 import java.lang.annotation.*;
 
 /**
@@ -12,19 +15,13 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Schedules.class)
 public @interface Schedule {
-    /**
-     * Job name
-     *
-     * @return name of this job
-     */
-    String name() default "";
 
     /**
      * Job group name
      *
      * @return group name of this job
      */
-    String group() default "";
+    String group() default Key.DEFAULT_GROUP;
 
     /**
      * Job description
@@ -34,7 +31,8 @@ public @interface Schedule {
     String desc() default "";
 
     /**
-     * Should Job be re-executed if failed
+     * Should Job be re-executed if failed, this affects {@link JobBuilder#requestRecovery()}
+     * <p><b>Most people should use {@link BaseJob#shouldRetry()}, {@link BaseJob#maxRetry()}, {@link BaseJob#retryDelay()}</b></p>
      *
      * @return should recovery
      */

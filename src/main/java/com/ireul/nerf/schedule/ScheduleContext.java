@@ -4,6 +4,7 @@ import com.ireul.nerf.application.Application;
 import org.quartz.*;
 import org.quartz.impl.DirectSchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +23,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * @author Ryan Wade
  */
 public class ScheduleContext {
-
-    public static final String INJECTOR_KEY = "com.ireul.nerf.Injector";
 
     private final Logger logger = LoggerFactory.getLogger(ScheduleContext.class);
 
@@ -65,14 +64,14 @@ public class ScheduleContext {
         ScheduleUtils.findJobs(this.application.getClass()).forEach(caa -> {
             Schedule a = caa.annotation;
             JobDetail job = newJob(caa.classType)
+                    .withIdentity(Key.createUniqueName(a.group()))
                     .requestRecovery(a.recovery())
                     .withDescription(a.desc())
-                    .withIdentity(a.name(), a.group())
                     .build();
             Trigger trigger = null;
             if (a.interval() > 0) {
                 if (a.cron().length() > 0) {
-                    logger.error("Both interval() and cron() found from @Schedule on class " + caa.classType.getName());
+                    logger.error("Both interval() and cron() found from @Schedule, schedule() will be used: " + caa.classType.getCanonicalName());
                 }
                 trigger = newTrigger()
                         .startAt(new Date(System.currentTimeMillis() + a.delay() * 1000))
@@ -84,13 +83,13 @@ public class ScheduleContext {
                         .withSchedule(cronSchedule(a.cron()))
                         .build();
             } else {
-                logger.error("No interval() and cron() found from @Schedule on class " + caa.classType.getName());
+                logger.error("No interval() and cron() found from @Schedule on class " + caa.classType.getCanonicalName());
             }
             if (trigger != null) {
                 try {
                     this.scheduler.scheduleJob(job, trigger);
                 } catch (SchedulerException e) {
-                    logger.error("Cannot add Job for " + caa.classType.getName(), e);
+                    logger.error("Cannot add Job for " + caa.classType.getCanonicalName(), e);
                 }
             }
         });
@@ -129,7 +128,7 @@ public class ScheduleContext {
 
         @Override
         public void jobToBeExecuted(JobExecutionContext context) {
-            context.put(INJECTOR_KEY, application());
+            context.put(BaseJob.kINJECTOR, application());
         }
 
         @Override
