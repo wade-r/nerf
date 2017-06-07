@@ -4,6 +4,8 @@ import com.ireul.nerf.inject.Inject;
 import com.ireul.nerf.web.WebContext;
 import com.ireul.nerf.web.server.Request;
 import com.ireul.nerf.web.server.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a handy implementation of {@link Controller}, basically provides storage fields and getter-setters.
@@ -13,6 +15,8 @@ import com.ireul.nerf.web.server.Response;
  * @see Controller
  */
 public class BaseController implements Controller {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private Response response;
 
@@ -52,6 +56,15 @@ public class BaseController implements Controller {
     @Override
     public void beforeAction() {
         header("Server", "Nerf");
+    }
+
+    /**
+     * Provide a slf4j Logger
+     *
+     * @return logger
+     */
+    public Logger logger() {
+        return this.logger;
     }
 
 }

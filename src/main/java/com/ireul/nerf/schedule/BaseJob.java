@@ -4,6 +4,7 @@ import com.ireul.nerf.application.Application;
 import org.quartz.*;
 import org.quartz.utils.Key;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -17,6 +18,17 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * @author Ryan Wade
  */
 public abstract class BaseJob implements Job {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * Get the logger
+     *
+     * @return Logger
+     */
+    public Logger logger() {
+        return logger;
+    }
 
     /**
      * Key in {@link JobExecutionContext#get(Object)} for injector
@@ -140,12 +152,5 @@ public abstract class BaseJob implements Job {
      * @throws Throwable any error occurred will be captured
      */
     public abstract void execute(JobDataMap dataMap) throws Exception;
-
-    /**
-     * Get the actual logger, should provide by subclass
-     *
-     * @return Logger
-     */
-    public abstract Logger logger();
 
 }
