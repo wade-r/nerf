@@ -149,7 +149,8 @@ public abstract class BaseJob implements Job {
     /**
      * Subclasses should implement this method, JobExecutionContext is already set and injections are done
      *
-     * @throws Throwable any error occurred will be captured
+     * @param dataMap dataMap of current job
+     * @throws Exception any error occurred will be captured
      */
     public abstract void execute(JobDataMap dataMap) throws Exception;
 
