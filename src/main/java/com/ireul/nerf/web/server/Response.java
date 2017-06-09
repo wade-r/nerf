@@ -121,6 +121,17 @@ public class Response {
     }
 
     /**
+     * Send status code and body string
+     *
+     * @param code   status code
+     * @param string body string
+     */
+    public void send(int code, String string) {
+        status(code);
+        body(string);
+    }
+
+    /**
      * Set Content-Type to text/plain and send string
      *
      * @param string content to body
@@ -129,6 +140,17 @@ public class Response {
         type(TEXT_PLAIN);
         length(string.length());
         body(string);
+    }
+
+    /**
+     * Send status code and body string as text/plain
+     *
+     * @param code   status code
+     * @param string body string
+     */
+    public void sendPlain(int code, String string) {
+        status(code);
+        bodyPlain(string);
     }
 
     /**
@@ -141,6 +163,17 @@ public class Response {
         String json = new Gson().toJson(object);
         length(json.length());
         body(json);
+    }
+
+    /**
+     * Send status code and body as application/json
+     *
+     * @param code   status code
+     * @param object object as json
+     */
+    public void sendJson(int code, Object object) {
+        status(code);
+        bodyJson(object);
     }
 
     /**

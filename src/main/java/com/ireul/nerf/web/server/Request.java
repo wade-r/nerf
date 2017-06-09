@@ -83,6 +83,16 @@ public class Request {
     }
 
     /**
+     * Get header value by name
+     *
+     * @param name name
+     * @return header value
+     */
+    public String header(String name) {
+        return raw().getHeader(name);
+    }
+
+    /**
      * Get the query string
      *
      * @return query string

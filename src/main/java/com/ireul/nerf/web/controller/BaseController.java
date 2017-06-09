@@ -51,11 +51,12 @@ public class BaseController implements Controller {
     }
 
     /**
-     * default implementation of {@link #beforeAction()} sets the "Server" header to "Nerf"
+     * default implementation sets the "Server" header to "Nerf"
      */
     @Override
     public void beforeAction() {
         header("Server", "Nerf");
+        response().encoding("UTF-8");
     }
 
     /**

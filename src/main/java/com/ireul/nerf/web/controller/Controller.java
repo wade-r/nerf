@@ -205,16 +205,36 @@ public interface Controller {
         response().body(chars);
     }
 
+    default void send(int code, String string) {
+        response().send(code, string);
+    }
+
     default void bodyPlain(String string) {
         response().bodyPlain(string);
+    }
+
+    default void sendPlain(int code, String string) {
+        response().sendPlain(code, string);
     }
 
     default void bodyJson(Object object) {
         response().bodyJson(object);
     }
 
+    default void sendJson(int code, Object object) {
+        response().sendJson(code, object);
+    }
+
     default void bodyHtml(String html) {
         response().bodyHtml(html);
+    }
+
+    default void halt(String body) throws Halt {
+        halt(400, body);
+    }
+
+    default void halt(int code, String body) throws Halt {
+        throw new Halt(code, body);
     }
 
     default void redirect(String location, int status) {

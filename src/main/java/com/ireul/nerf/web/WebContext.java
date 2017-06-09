@@ -2,6 +2,7 @@ package com.ireul.nerf.web;
 
 import com.ireul.nerf.application.Application;
 import com.ireul.nerf.web.controller.Controller;
+import com.ireul.nerf.web.controller.Halt;
 import com.ireul.nerf.web.render.FreeMarkerRenderer;
 import com.ireul.nerf.web.render.Renderer;
 import com.ireul.nerf.web.route.*;
@@ -161,7 +162,17 @@ public class WebContext {
                     // invoke method
                     Method method = route.method();
                     if (!method.isAccessible()) method.setAccessible(true);
-                    method.invoke(controller);
+                    try {
+                        method.invoke(controller);
+                    } catch (InvocationTargetException e) {
+                        // if Halt is catched, send it
+                        if (e.getCause() instanceof Halt) {
+                            Halt halt = (Halt) e.getCause();
+                            controller.send(halt.getCode(), halt.getBody());
+                        } else {
+                            throw e;
+                        }
+                    }
                     // mark handled
                     baseRequest.setHandled(true);
                 } else {
