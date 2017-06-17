@@ -17,6 +17,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
  *
  * @author Ryan Wade
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class BaseJob implements Job {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -87,9 +88,9 @@ public abstract class BaseJob implements Job {
         return 1;
     }
 
-    private void retryIfNeeded() {
+    private boolean retry() {
         // check shouldRetry()
-        if (!shouldRetry()) return;
+        if (!shouldRetry()) return false;
 
         // determine if max retry reached
         JobDataMap dataMap = executionContext().getMergedJobDataMap();
@@ -100,7 +101,7 @@ public abstract class BaseJob implements Job {
             retryCount = dataMap.getInt(kRETRY_COUNT);
             if (retryCount >= maxRetry()) {
                 logger().error("Max retry exceeded for " + getClass().getCanonicalName());
-                return;
+                return false;
             }
         }
 
@@ -125,7 +126,9 @@ public abstract class BaseJob implements Job {
             logger().info("Retrying " + getClass().getCanonicalName());
         } catch (SchedulerException e) {
             logger().error("Failed to retry " + getClass().getCanonicalName(), e);
+            return false;
         }
+        return true;
     }
 
     @Override
@@ -136,13 +139,22 @@ public abstract class BaseJob implements Job {
         Application application = (Application) context.get(kINJECTOR);
         application.injectTo(this);
         // execute
+        boolean isSuccess = true;
         try {
             execute(context.getMergedJobDataMap());
         } catch (Throwable throwable) {
             // log the error
             logger().error("Error occurred", throwable);
-            // retry if needed
-            retryIfNeeded();
+            // mark false
+            isSuccess = false;
+        }
+        // check success
+        if (isSuccess) {
+            onSuccess(context.getMergedJobDataMap());
+        } else {
+            if (!retry()) {
+                onFailure(context.getMergedJobDataMap());
+            }
         }
     }
 
@@ -153,5 +165,17 @@ public abstract class BaseJob implements Job {
      * @throws Exception any error occurred will be captured
      */
     public abstract void execute(JobDataMap dataMap) throws Exception;
+
+    /**
+     * Method to invoke after job successfully completed
+     */
+    public void onSuccess(JobDataMap dataMap) {
+    }
+
+    /**
+     * Method to invoke after all retries failed
+     */
+    public void onFailure(JobDataMap dataMap) {
+    }
 
 }
