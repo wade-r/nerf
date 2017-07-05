@@ -13,6 +13,7 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +31,7 @@ import java.util.List;
  */
 public class WebContext {
 
-    private final Logger logger = LoggerFactory.getLogger(WebContext.class);
+    private final Logger LOG = LoggerFactory.getLogger(WebContext.class);
 
     private final Application application;
 
@@ -86,7 +87,7 @@ public class WebContext {
             this.server.stop();
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("Failed to stop Jetty gracefully");
+            LOG.error("Failed to stop Jetty gracefully");
             System.exit(100);
         }
     }
@@ -165,7 +166,7 @@ public class WebContext {
                     try {
                         method.invoke(controller);
                     } catch (InvocationTargetException e) {
-                        // if Halt is catched, send it
+                        // if Halt is caught, send it
                         if (e.getCause() instanceof Halt) {
                             Halt halt = (Halt) e.getCause();
                             controller.send(halt.getStatusCode(), halt.getBody());
@@ -181,9 +182,9 @@ public class WebContext {
                 }
             } catch (Exception e) {
                 if (e instanceof InvocationTargetException) {
-                    WebContext.this.logger.error("ActionError", e.getCause());
+                    LOG.error("ActionError", e.getCause());
                 } else {
-                    WebContext.this.logger.error("InternalError", e);
+                    LOG.error("InternalError", e);
                 }
                 this.doError(target, baseRequest, request, response);
             }
