@@ -20,17 +20,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 @SuppressWarnings("WeakerAccess")
 public abstract class BaseJob implements Job {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    /**
-     * Get the logger
-     *
-     * @return Logger
-     */
-    public Logger logger() {
-        return logger;
-    }
-
     /**
      * Key in {@link JobExecutionContext#get(Object)} for injector
      */
@@ -41,6 +30,8 @@ public abstract class BaseJob implements Job {
      */
     public static final String kRETRY_COUNT = "__NERF_RETRY_COUNT";
 
+    protected final Logger LOG = LoggerFactory.getLogger(getClass());
+
     private JobExecutionContext executionContext;
 
     /**
@@ -48,7 +39,7 @@ public abstract class BaseJob implements Job {
      *
      * @return context
      */
-    public JobExecutionContext executionContext() {
+    public JobExecutionContext getExecutionContext() {
         return this.executionContext;
     }
 
@@ -57,8 +48,102 @@ public abstract class BaseJob implements Job {
      *
      * @return scheduler
      */
-    public Scheduler scheduler() {
-        return executionContext().getScheduler();
+    public Scheduler getScheduler() {
+        return getExecutionContext().getScheduler();
+    }
+
+    @Override
+    public final void execute(JobExecutionContext context) throws JobExecutionException {
+        // set executionContext
+        this.executionContext = context;
+        // inject
+        Application application = (Application) context.get(kINJECTOR);
+        application.injectTo(this);
+        // execute
+        boolean isSuccess = true;
+        try {
+            execute(context.getMergedJobDataMap());
+        } catch (Throwable throwable) {
+            // log the error
+            LOG.error("Error occurred", throwable);
+            // mark false
+            isSuccess = false;
+        }
+        // check success
+        if (isSuccess) {
+            onSuccess(context.getMergedJobDataMap());
+        } else {
+            if (!retry()) {
+                onFailure(context.getMergedJobDataMap());
+            }
+        }
+    }
+
+    /**
+     * Re-schedule with delay, returns false if retryCount exceeded retryMax or failed to schedule
+     */
+    private boolean retry() {
+        // check shouldRetry()
+        if (!shouldRetry()) return false;
+
+        // determine if max retry reached
+        JobDataMap dataMap = getExecutionContext().getMergedJobDataMap();
+
+        int retryCount = 0;
+
+        // if max retry exceeded just return
+        if (dataMap.get(kRETRY_COUNT) != null) {
+            retryCount = dataMap.getInt(kRETRY_COUNT);
+            if (retryCount >= maxRetry()) {
+                LOG.error("Max retry exceeded for " + getClass().getCanonicalName());
+                return false;
+            }
+        }
+
+        // update retryCount
+        retryCount = retryCount + 1;
+        dataMap.put(kRETRY_COUNT, retryCount);
+
+        // reschedule
+        try {
+            JobDetail jobDetail = getExecutionContext().getJobDetail();
+            getScheduler()
+                    .scheduleJob(
+                            newJob(getClass())
+                                    .withIdentity(Key.createUniqueName(jobDetail.getKey().getGroup()))
+                                    .usingJobData(dataMap)
+                                    .withDescription(jobDetail.getDescription())
+                                    .build(),
+                            newTrigger()
+                                    .startAt(new Date(System.currentTimeMillis() + retryDelay() * 1000))
+                                    .build()
+                    );
+            LOG.info("Retrying " + getClass().getCanonicalName());
+        } catch (SchedulerException e) {
+            LOG.error("Failed to retry " + getClass().getCanonicalName(), e);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Subclasses should implement this method, JobExecutionContext is already set and injections are done
+     *
+     * @param dataMap dataMap of current job
+     * @throws Exception any error occurred will be captured
+     */
+    public abstract void execute(JobDataMap dataMap) throws Exception;
+
+    /**
+     * Method to invoke after job successfully completed
+     */
+    public void onSuccess(JobDataMap dataMap) {
+    }
+
+    /**
+     * Method to invoke after all retries failed
+     */
+    public void onFailure(JobDataMap dataMap) {
     }
 
     /**
@@ -86,96 +171,6 @@ public abstract class BaseJob implements Job {
      */
     public int retryDelay() {
         return 1;
-    }
-
-    private boolean retry() {
-        // check shouldRetry()
-        if (!shouldRetry()) return false;
-
-        // determine if max retry reached
-        JobDataMap dataMap = executionContext().getMergedJobDataMap();
-        int retryCount = 0;
-
-        // if max retry exceeded just return
-        if (dataMap.get(kRETRY_COUNT) != null) {
-            retryCount = dataMap.getInt(kRETRY_COUNT);
-            if (retryCount >= maxRetry()) {
-                logger().error("Max retry exceeded for " + getClass().getCanonicalName());
-                return false;
-            }
-        }
-
-        // update retryCount
-        retryCount = retryCount + 1;
-        dataMap.put(kRETRY_COUNT, retryCount);
-
-        // reschedule
-        try {
-            JobDetail jobDetail = executionContext().getJobDetail();
-            scheduler()
-                    .scheduleJob(
-                            newJob(getClass())
-                                    .withIdentity(Key.createUniqueName(jobDetail.getKey().getGroup()))
-                                    .usingJobData(dataMap)
-                                    .withDescription(jobDetail.getDescription())
-                                    .build(),
-                            newTrigger()
-                                    .startAt(new Date(System.currentTimeMillis() + retryDelay() * 1000))
-                                    .build()
-                    );
-            logger().info("Retrying " + getClass().getCanonicalName());
-        } catch (SchedulerException e) {
-            logger().error("Failed to retry " + getClass().getCanonicalName(), e);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public final void execute(JobExecutionContext context) throws JobExecutionException {
-        // set executionContext
-        this.executionContext = context;
-        // inject
-        Application application = (Application) context.get(kINJECTOR);
-        application.injectTo(this);
-        // execute
-        boolean isSuccess = true;
-        try {
-            execute(context.getMergedJobDataMap());
-        } catch (Throwable throwable) {
-            // log the error
-            logger().error("Error occurred", throwable);
-            // mark false
-            isSuccess = false;
-        }
-        // check success
-        if (isSuccess) {
-            onSuccess(context.getMergedJobDataMap());
-        } else {
-            if (!retry()) {
-                onFailure(context.getMergedJobDataMap());
-            }
-        }
-    }
-
-    /**
-     * Subclasses should implement this method, JobExecutionContext is already set and injections are done
-     *
-     * @param dataMap dataMap of current job
-     * @throws Exception any error occurred will be captured
-     */
-    public abstract void execute(JobDataMap dataMap) throws Exception;
-
-    /**
-     * Method to invoke after job successfully completed
-     */
-    public void onSuccess(JobDataMap dataMap) {
-    }
-
-    /**
-     * Method to invoke after all retries failed
-     */
-    public void onFailure(JobDataMap dataMap) {
     }
 
 }

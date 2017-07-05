@@ -229,14 +229,6 @@ public interface Controller {
         response().bodyHtml(html);
     }
 
-    default void halt(String body) throws Halt {
-        halt(400, body);
-    }
-
-    default void halt(int code, String body) throws Halt {
-        throw new Halt(code, body);
-    }
-
     default void redirect(String location, int status) {
         response().redirect(location, status);
     }

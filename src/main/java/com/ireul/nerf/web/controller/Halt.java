@@ -1,5 +1,9 @@
 package com.ireul.nerf.web.controller;
 
+import javax.validation.constraints.NotNull;
+
+import static com.ireul.nerf.utils.Mimes.TEXT_PLAIN;
+
 /**
  * This exception is used for halt a http action intentionally
  * <p>Example: </p>
@@ -8,7 +12,6 @@ package com.ireul.nerf.web.controller;
  *         type("text/plain");
  *         if (namedPath("url") == null) {
  *             throw new Halt(404, "url not found");
- *             // or halt(404, "url not found");
  *         }
  *         body("alert('hello');");
  *     }
@@ -16,24 +19,54 @@ package com.ireul.nerf.web.controller;
  *
  * @author Ryan Wade
  */
-public class Halt extends Exception {
+@SuppressWarnings("WeakerAccess unused")
+public class Halt extends RuntimeException {
 
-    private final int code;
+    private final int statusCode;
 
     private final String body;
 
-    public int getCode() {
-        return code;
+    private final String contentType;
+
+    @NotNull
+    public int getStatusCode() {
+        return statusCode;
     }
 
+    @NotNull
     public String getBody() {
         return body;
     }
 
-    public Halt(int code, String body) {
+    @NotNull
+    public String getContentType() {
+        return contentType;
+    }
+
+    public Halt() {
+        this(null);
+    }
+
+    public Halt(String body) {
+        this(400, body);
+    }
+
+    public Halt(int statusCode, String body) {
+        this(statusCode, body, null);
+    }
+
+    public Halt(int statusCode, String body, String contentType) {
         super("Intentionally Halt");
-        this.code = code;
+
+        if (body == null) {
+            body = "Invalid Request";
+        }
+        if (contentType == null) {
+            contentType = TEXT_PLAIN;
+        }
+        this.statusCode = statusCode;
         this.body = body;
+        this.contentType = TEXT_PLAIN;
     }
 
 }

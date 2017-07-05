@@ -41,4 +41,5 @@ public class FreeMarkerRenderer implements Renderer {
             throw new RuntimeException(e);
         }
     }
+
 }

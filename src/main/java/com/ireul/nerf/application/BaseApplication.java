@@ -59,8 +59,9 @@ public class BaseApplication implements Application {
      *
      * @param command the command to handle
      */
+    @Override
     public void execute(Command command) {
-        CommandUtils.findHandles(this.getClass(), command.name).forEach(maa -> {
+        CommandUtils.findHandles(this.getClass(), command.getName()).forEach(maa -> {
             Method method = maa.method;
             // set accessible to true
             if (!method.isAccessible()) method.setAccessible(true);
@@ -94,7 +95,7 @@ public class BaseApplication implements Application {
 
         AnnotationUtils
                 .findInstanceMethods(this.getClass(), Handle.class)
-                .flatMap(maa -> Arrays.stream(maa.annotation.value()))
+                .flatMap(x -> Arrays.stream(x.annotation.value()))
                 .collect(Collectors.toSet())
                 .forEach(name -> {
                     o.println();
@@ -116,7 +117,7 @@ public class BaseApplication implements Application {
         // initialize webContext
         this.webContext = new WebContext(this);
         // setup
-        this.webContext.setup(command.options);
+        this.webContext.setup(command.getOptions());
         // start
         this.webContext.start();
     }
@@ -131,7 +132,7 @@ public class BaseApplication implements Application {
         // initialize scheduleContext
         this.scheduleContext = new ScheduleContext(this);
         // setup
-        this.scheduleContext.setup(command.options);
+        this.scheduleContext.setup(command.getOptions());
         // start
         this.scheduleContext.start();
     }

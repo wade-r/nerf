@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BaseController implements Controller {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
     private Response response;
 
@@ -57,15 +57,6 @@ public class BaseController implements Controller {
     public void beforeAction() {
         header("Server", "Nerf");
         response().encoding("UTF-8");
-    }
-
-    /**
-     * Provide a slf4j Logger
-     *
-     * @return logger
-     */
-    public Logger logger() {
-        return this.logger;
     }
 
 }

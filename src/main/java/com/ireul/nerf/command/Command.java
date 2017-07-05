@@ -1,5 +1,6 @@
 package com.ireul.nerf.command;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,11 +23,44 @@ public class Command {
 
     public static final String DEFAULT_NAME = "help";
 
-    public String name;
+    private String name;
 
-    public HashMap<String, String> options = new HashMap<>();
+    private final HashMap<String, String> options = new HashMap<>();
 
-    public ArrayList<String> targets = new ArrayList<>();
+    private final ArrayList<String> targets = new ArrayList<>();
+
+    private Command() {
+    }
+
+    /**
+     * Get options as a map, boolean option will has a value of "true"
+     *
+     * @return options map
+     */
+    @NotNull
+    public HashMap<String, String> getOptions() {
+        return options;
+    }
+
+    /**
+     * Get command targets
+     *
+     * @return command targets
+     */
+    @NotNull
+    public ArrayList<String> getTargets() {
+        return targets;
+    }
+
+    /**
+     * Get command name
+     *
+     * @return command name
+     */
+    @NotNull
+    public String getName() {
+        return name;
+    }
 
     /**
      * Decode command-line arguments to {@link Command}
@@ -66,4 +100,5 @@ public class Command {
         }
         return command;
     }
+
 }

@@ -43,29 +43,31 @@ public interface Injector {
     // TODO: 2017/6/1 optimize performance
     @SuppressWarnings("unchecked")
     default void injectTo(Object target) {
-        ReflectionUtils.getAllFields(target.getClass()).forEach(f -> {
+        ReflectionUtils.getAllFields(target.getClass()).forEach(targetField -> {
             // skip static
-            if (Modifier.isStatic(f.getModifiers())) return;
+            if (Modifier.isStatic(targetField.getModifiers())) return;
             // check @Inject
-            if (f.getAnnotation(Inject.class) == null) return;
+            if (targetField.getAnnotation(Inject.class) == null) return;
             // make it accessible
-            if (!f.isAccessible()) f.setAccessible(true);
+            if (!targetField.isAccessible()) targetField.setAccessible(true);
 
             // injected flag
             boolean injected = false;
 
             // search fields
-            for (Field lf : ReflectionUtils.getAllFields(this.getClass())) {
+            for (Field localField : ReflectionUtils.getAllFields(this.getClass())) {
                 // check @Provide
-                if (lf.getAnnotation(Provide.class) == null) continue;
+                if (localField.getAnnotation(Provide.class) == null) continue;
                 // check assignable
-                if (!f.getType().isAssignableFrom(lf.getType())) continue;
+                if (!targetField.getType().isAssignableFrom(localField.getType())) continue;
                 // make it accessible
-                if (!lf.isAccessible()) lf.setAccessible(true);
+                if (!localField.isAccessible()) localField.setAccessible(true);
                 // assign
                 try {
-                    f.set(target, lf.get(this));
+                    // value injected
+                    targetField.set(target, localField.get(this));
                     injected = true;
+                    break;
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -74,16 +76,18 @@ public interface Injector {
             if (injected) return;
 
             // search methods
-            for (Method m : ReflectionUtils.getAllMethods(this.getClass())) {
+            for (Method localMethod : ReflectionUtils.getAllMethods(this.getClass())) {
                 // check @Provide
-                if (m.getAnnotation(Provide.class) == null) continue;
+                if (localMethod.getAnnotation(Provide.class) == null) continue;
                 // check assignable
-                if (!f.getType().isAssignableFrom(m.getReturnType())) continue;
+                if (!targetField.getType().isAssignableFrom(localMethod.getReturnType())) continue;
                 // make it accessible
-                if (!m.isAccessible()) m.setAccessible(true);
+                if (!localMethod.isAccessible()) localMethod.setAccessible(true);
                 // invoke and assign
                 try {
-                    f.set(target, m.invoke(this));
+                    // value injected
+                    targetField.set(target, localMethod.invoke(this));
+                    break;
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }

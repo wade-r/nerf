@@ -62,7 +62,7 @@ public class RouteUtils {
 
             if (p.startsWith(":")) {
                 // match ":name", put named path
-                output.namedPaths().put(p.substring(1), a);
+                output.getNamedPaths().put(p.substring(1), a);
             } else if (!p.equals(a)) {
                 // not equal, clearNamedPaths and return
                 return false;

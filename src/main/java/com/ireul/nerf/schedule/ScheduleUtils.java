@@ -1,6 +1,6 @@
 package com.ireul.nerf.schedule;
 
-import com.ireul.nerf.utils.ClassAndAnnotation;
+import com.ireul.nerf.utils.AnnotatedClass;
 import org.quartz.Job;
 import org.reflections.Reflections;
 
@@ -18,18 +18,18 @@ public class ScheduleUtils {
      * @param basePackage package to scan
      * @return stream
      */
-    public static Stream<ClassAndAnnotation<Job, Schedule>> findJobs(String basePackage) {
+    public static Stream<AnnotatedClass<Schedule, Job>> findJobs(String basePackage) {
         Reflections reflections = new Reflections(basePackage);
         return reflections.getSubTypesOf(Job.class)
                 .stream()
                 .flatMap(clazz -> {
                     return Arrays.stream(clazz.getAnnotationsByType(Schedule.class))
-                            .map(annotation -> new ClassAndAnnotation<>(clazz, annotation));
+                            .map(annotation -> new AnnotatedClass<>(clazz, annotation));
                 });
     }
 
 
-    public static Stream<ClassAndAnnotation<Job, Schedule>> findJobs(Class<?> clazz) {
+    public static Stream<AnnotatedClass<Schedule, Job>> findJobs(Class<?> clazz) {
         return findJobs(clazz.getPackage().getName());
     }
 

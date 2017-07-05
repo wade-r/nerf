@@ -1,7 +1,7 @@
 package com.ireul.nerf.command;
 
 import com.ireul.nerf.utils.AnnotationUtils;
-import com.ireul.nerf.utils.MethodAndAnnotation;
+import com.ireul.nerf.utils.AnnotatedMethod;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -22,13 +22,16 @@ public class CommandUtils {
      * @param commandName command name
      * @return Stream of methods
      */
-    public static Stream<MethodAndAnnotation<Handle>> findHandles(Class<?> clazz, String commandName) {
-        // create a priority queue for multiple methods invocation
-        PriorityQueue<MethodAndAnnotation<Handle>> queue = new PriorityQueue<>(1, Comparator.comparingInt(m -> m.annotation.priority()));
+    public static Stream<AnnotatedMethod<Handle>> findHandles(Class<?> clazz, String commandName) {
+        // create a priority queue for multiple Handles
+        PriorityQueue<AnnotatedMethod<Handle>> queue = new PriorityQueue<>(
+                1,
+                Comparator.comparingInt(m -> m.annotation.priority())
+        );
         // append queue
         AnnotationUtils
                 .findInstanceMethods(clazz, Handle.class)
-                .filter(maa -> Arrays.stream(maa.annotation.value()).anyMatch(commandName::equalsIgnoreCase))
+                .filter(x -> Arrays.stream(x.annotation.value()).anyMatch(commandName::equalsIgnoreCase))
                 .forEach(queue::add);
         return queue.stream();
     }

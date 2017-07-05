@@ -36,7 +36,7 @@ public class SimpleRouter implements Router {
         for (Route route : this.routes) {
             result.reset();
             if (this.matchRoute(route, request, result)) {
-                result.route(route);
+                result.setRoute(route);
                 break;
             }
         }

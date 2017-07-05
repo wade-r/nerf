@@ -24,6 +24,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
  */
 public class ScheduleContext {
 
+    private static final String OPTION_QUARTZ_CONFIG = "quartz-config";
+
     private final Logger logger = LoggerFactory.getLogger(ScheduleContext.class);
 
     private Application application;
@@ -35,7 +37,7 @@ public class ScheduleContext {
     }
 
     public void setup(HashMap<String, String> options) {
-        String configFile = options.get("quartz-config");
+        String configFile = options.get(OPTION_QUARTZ_CONFIG);
         // setup scheduler
         if (configFile == null) {
             try {
@@ -62,34 +64,44 @@ public class ScheduleContext {
         }
         // scan and schedule
         ScheduleUtils.findJobs(this.application.getClass()).forEach(caa -> {
-            Schedule a = caa.annotation;
-            JobDetail job = newJob(caa.classType)
-                    .withIdentity(Key.createUniqueName(a.group()))
-                    .requestRecovery(a.recovery())
-                    .withDescription(a.desc())
+            Schedule schedule = caa.getAnnotation();
+            JobDetail job = newJob(caa.getClassType())
+                    .withIdentity(Key.createUniqueName(schedule.group()))
+                    .requestRecovery(schedule.recovery())
+                    .withDescription(schedule.desc())
                     .build();
             Trigger trigger = null;
-            if (a.interval() > 0) {
-                if (a.cron().length() > 0) {
-                    logger.error("Both interval() and cron() found from @Schedule, schedule() will be used: " + caa.classType.getCanonicalName());
+            if (schedule.interval() > 0) {
+                if (schedule.cron().length() > 0) {
+                    logger.error(
+                            "Both interval() and cron() found from @Schedule, schedule() will be used: "
+                                    + caa.getClassType().getCanonicalName()
+                    );
                 }
                 trigger = newTrigger()
-                        .startAt(new Date(System.currentTimeMillis() + a.delay() * 1000))
-                        .withSchedule(simpleSchedule().withIntervalInSeconds((int) a.interval()).repeatForever())
+                        .startAt(new Date(System.currentTimeMillis() + schedule.delay() * 1000))
+                        .withSchedule(
+                                simpleSchedule()
+                                        .withIntervalInSeconds((int) schedule.interval())
+                                        .repeatForever()
+                        )
                         .build();
-            } else if (a.cron().length() > 0) {
+            } else if (schedule.cron().length() > 0) {
                 trigger = newTrigger()
                         .startNow()
-                        .withSchedule(cronSchedule(a.cron()))
+                        .withSchedule(cronSchedule(schedule.cron()))
                         .build();
             } else {
-                logger.error("No interval() and cron() found from @Schedule on class " + caa.classType.getCanonicalName());
+                logger.error(
+                        "No interval() and cron() found from @Schedule on class "
+                                + caa.getClassType().getCanonicalName()
+                );
             }
             if (trigger != null) {
                 try {
                     this.scheduler.scheduleJob(job, trigger);
                 } catch (SchedulerException e) {
-                    logger.error("Cannot add Job for " + caa.classType.getCanonicalName(), e);
+                    logger.error("Cannot add Job for " + caa.getClassType().getCanonicalName(), e);
                 }
             }
         });

@@ -3,6 +3,8 @@ package com.ireul.nerf.application;
 import com.ireul.nerf.command.Command;
 import com.ireul.nerf.inject.Injector;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * This is the abstraction of a Nerf application
  * <p>Any implementation of {@link Application} can be ignited by {@link com.ireul.nerf.Nerf#ignite(Class, String[])}</p>
@@ -31,7 +33,7 @@ public interface Application extends Injector {
      *
      * @param args command-line arguments
      */
-    default void execute(String[] args) {
+    default void execute(@NotNull String[] args) {
         execute(Command.decode(args));
     }
 
@@ -40,6 +42,6 @@ public interface Application extends Injector {
      *
      * @param command command to execute
      */
-    void execute(Command command);
+    void execute(@NotNull Command command);
 
 }

@@ -31,16 +31,16 @@ public class RouteUtilsTest {
         boolean ok2 = RouteUtils.matchPath("/index/:name", "/index/hello", result);
         assertTrue(ok2);
         assertTrue(result.hasNamedPaths());
-        assertTrue(result.namedPaths().size() == 1);
-        assertEquals(result.namedPaths().get("name"), "hello");
+        assertTrue(result.getNamedPaths().size() == 1);
+        assertEquals(result.getNamedPaths().get("name"), "hello");
         // 2. multiple match
         result = new RouteResult();
         boolean ok3 = RouteUtils.matchPath("/index/:name/:value", "/index/hello/world", result);
         assertTrue(ok3);
         assertTrue(result.hasNamedPaths());
-        assertTrue(result.namedPaths().size() == 2);
-        assertEquals(result.namedPaths().get("name"), "hello");
-        assertEquals(result.namedPaths().get("value"), "world");
+        assertTrue(result.getNamedPaths().size() == 2);
+        assertEquals(result.getNamedPaths().get("name"), "hello");
+        assertEquals(result.getNamedPaths().get("value"), "world");
     }
 
     @Test

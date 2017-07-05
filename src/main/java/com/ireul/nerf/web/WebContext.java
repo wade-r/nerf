@@ -140,13 +140,13 @@ public class WebContext {
         public void doHandle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
             try {
                 RouteResult result = router.route(request);
-                Route route = result.route();
+                Route route = result.getRoute();
                 if (route != null) {
                     // create wrapped request
                     Request wrappedRequest = new Request(request);
                     // set namedPaths if needed
                     if (result.hasNamedPaths()) {
-                        wrappedRequest.namedPaths(result.namedPaths());
+                        wrappedRequest.namedPaths(result.getNamedPaths());
                     }
                     // create wrapped response
                     Response wrappedResponse = new Response(response);
@@ -168,7 +168,7 @@ public class WebContext {
                         // if Halt is catched, send it
                         if (e.getCause() instanceof Halt) {
                             Halt halt = (Halt) e.getCause();
-                            controller.send(halt.getCode(), halt.getBody());
+                            controller.send(halt.getStatusCode(), halt.getBody());
                         } else {
                             throw e;
                         }

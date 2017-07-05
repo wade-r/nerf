@@ -50,16 +50,20 @@ public class JettyServer {
      * @throws Exception any exception
      */
     public void start() throws Exception {
+        // Create server
         this.server = new Server(new QueuedThreadPool(200, 8, 60000));
+        // Create connection factory
         HttpConfiguration configuration = new HttpConfiguration();
         configuration.setSecureScheme("https");
         configuration.addCustomizer(new ForwardedRequestCustomizer());
         HttpConnectionFactory factory = new HttpConnectionFactory(configuration);
+        // Create connector
         ServerConnector connector = new ServerConnector(this.server, factory);
         connector.setIdleTimeout(TimeUnit.HOURS.toMillis(1));
         connector.setSoLingerTime(-1);
         connector.setHost(this.bindHost);
         connector.setPort(this.bindPort);
+        // Start server
         this.server = connector.getServer();
         this.server.setConnectors(new Connector[]{connector});
         this.server.setHandler(this.handler);

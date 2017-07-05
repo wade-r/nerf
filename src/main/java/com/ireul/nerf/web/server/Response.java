@@ -7,24 +7,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
+import static com.ireul.nerf.utils.HeaderNames.*;
+import static com.ireul.nerf.utils.Mimes.*;
+
 /**
  * This class wraps a {@link HttpServletResponse}, providing various helper methods.
  *
  * @author Ryan Wade
  */
 public class Response {
-
-    public static final String CONTENT_TYPE = "Content-Type";
-
-    public static final String CONTENT_LENGTH = "Content-Length";
-
-    public static final String LOCATION = "Location";
-
-    public static final String TEXT_PLAIN = "text/plain";
-
-    public static final String TEXT_HTML = "text/html";
-
-    public static final String APPLICATION_JSON = "application/json";
 
     private HttpServletResponse response;
 

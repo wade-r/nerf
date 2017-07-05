@@ -1,5 +1,6 @@
 package com.ireul.nerf.web.route;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 
 /**
@@ -17,7 +18,7 @@ public class RouteResult {
     /**
      * @return {@link #route}
      */
-    public Route route() {
+    public Route getRoute() {
         return this.route;
     }
 
@@ -26,14 +27,15 @@ public class RouteResult {
      *
      * @param route {@link Route} to set
      */
-    public void route(Route route) {
+    public void setRoute(Route route) {
         this.route = route;
     }
 
     /**
      * @return {@link #namedPaths}, create if not exists
      */
-    public HashMap<String, String> namedPaths() {
+    @NotNull
+    public HashMap<String, String> getNamedPaths() {
         if (this.namedPaths == null) {
             this.namedPaths = new HashMap<>();
         }

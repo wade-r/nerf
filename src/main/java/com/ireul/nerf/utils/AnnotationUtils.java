@@ -2,6 +2,7 @@ package com.ireul.nerf.utils;
 
 import org.reflections.ReflectionUtils;
 
+import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -23,12 +24,16 @@ public class AnnotationUtils {
      * @param <U>            class type
      * @return stream
      */
+    @NotNull
     @SuppressWarnings("unchecked")
-    public static <T extends Annotation, U> Stream<MethodAndAnnotation<T>> findInstanceMethods(Class<U> clazz, Class<T> annotationType) {
+    public static <T extends Annotation, U> Stream<AnnotatedMethod<T>> findInstanceMethods(Class<U> clazz, Class<T> annotationType) {
         return ReflectionUtils.getAllMethods(clazz)
                 .stream()
                 .filter(m -> !Modifier.isStatic(m.getModifiers()))
-                .flatMap(m -> Arrays.stream(m.getAnnotationsByType(annotationType)).map(a -> new MethodAndAnnotation<>(m, a)));
+                .flatMap(m -> Arrays
+                        .stream(m.getAnnotationsByType(annotationType))
+                        .map(a -> new AnnotatedMethod<>(m, a))
+                );
     }
 
 }
